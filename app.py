@@ -7,7 +7,7 @@ from io import BytesIO
 
 class RegistroAtividades:
     def __init__(self):
-        self.arquivo_dados = 'registros_atividades.xlsx'
+        self.arquivo_dados = 'registros_atividades.csv'
         self.iniciar_arquivo_excel()
 
     def iniciar_arquivo_excel(self):
