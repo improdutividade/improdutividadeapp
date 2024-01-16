@@ -31,6 +31,10 @@ class RegistroAtividades:
         if st.button("Baixar Relatório Excel"):
             self.gerar_relatorio_excel()
 
+        # Adiciona botão para reiniciar os dados
+        if st.button("Zerar Dados"):
+            self.zerar_dados()
+
     def selecionar_atividade(self, funcionario_id):
         opcoes_atividades = [
             'TRABALHANDO',
@@ -68,7 +72,7 @@ class RegistroAtividades:
             'Atividade': atividade,
             'Data': datetime.datetime.now().strftime("%Y-%m-%d"),
             'Início': datetime.datetime.now().strftime("%H:%M:%S"),
-            'Fim': '',
+            'Fim': datetime.datetime.now().strftime("%H:%M:%S"),
             'Duração': ''
         }
 
@@ -100,7 +104,22 @@ class RegistroAtividades:
 
     def gerar_relatorio_excel(self):
         st.write(f"Dados salvos em '{self.arquivo_dados}'")
-        st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
+
+        # Carregar o DataFrame atual
+        df = pd.read_excel(self.arquivo_dados)
+
+        # Verificar se há dados a serem exportados
+        if not df.empty:
+            # Adicionar botão de download
+            st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
+        else:
+            st.warning("Nenhum dado disponível para exportação.")
+
+    def zerar_dados(self):
+        # Zerar os dados no DataFrame e no arquivo Excel
+        df = pd.DataFrame(columns=['ID', 'Nome_Usuário', 'Frente_Serviço', 'Função', 'Atividade', 'Data', 'Início', 'Fim', 'Duração'])
+        df.to_excel(self.arquivo_dados, index=False)
+        st.success("Dados zerados. Você pode iniciar novos registros.")
 
 # Função auxiliar para criar botão de download
 def get_binary_file_downloader_html(bin_file, file_label='File'):
