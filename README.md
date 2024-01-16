@@ -1,4 +1,4 @@
-# improdutividadeapp
+# improdutividade.app
 
 # Olá!
 Este é um projeto Pessoal de rastreabilidade da produtividade de equipe que pode ser utilizado em diversos ambientes.
