@@ -3,6 +3,7 @@ import pandas as pd
 import datetime
 import os
 import base64
+from io import BytesIO
 
 class RegistroAtividades:
     def __init__(self):
