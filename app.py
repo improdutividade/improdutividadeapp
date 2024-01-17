@@ -11,7 +11,7 @@ class RegistroAtividades:
         self.arquivo_dados = 'dados.xlsx'
         self.nome_usuario = st.text_input("Digite o seu nome de usuário:")
         self.frente_servico = st.text_input("Digite a frente de serviço:")
-        self.id_sessao = st.session_state.id_sessao if "id_sessao" in st.session_state else st.session_state.__setitem__("id_sessao", st._session_info.id) or st._session_info.id
+        self.id_sessao = st.session_state.id_sessao if "id_sessao" in st.session_state else st.session_state.__setitem__("id_sessao", st.report_thread.get_report_ctx().session_id) or st.report_thread.get_report_ctx().session_id
 
     def obter_id_sessao(self):
         return st.session.get_session().id
