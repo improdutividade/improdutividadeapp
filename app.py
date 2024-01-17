@@ -14,7 +14,7 @@ class RegistroAtividades:
 
     def obter_id_sessao(self):
         if 'id_sessao' not in st.session_state:
-            st.session_state.id_sessao = st.session_id()
+            st.session_state.id_sessao = st.session.get_session().id
         return st.session_state.id_sessao
 
     def iniciar_arquivo_excel(self):
