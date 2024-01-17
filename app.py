@@ -5,16 +5,20 @@ import pytz
 import os
 import base64
 from io import BytesIO
+import uuid
 
 class RegistroAtividades:
     def __init__(self):
         self.arquivo_dados = 'dados.xlsx'
         self.nome_usuario = st.text_input("Digite o seu nome de usuário:")
         self.frente_servico = st.text_input("Digite a frente de serviço:")
-        self.id_sessao = st.session_state.id_sessao if "id_sessao" in st.session_state else st.session_state.__setitem__("id_sessao", st.report_thread.get_report_ctx().session_id) or st.report_thread.get_report_ctx().session_id
+        self.id_sessao = self.obter_id_sessao()
 
     def obter_id_sessao(self):
-        return st.session.get_session().id
+        if "id_sessao" not in st.session_state:
+            # Gera um UUID único para a sessão
+            st.session_state.id_sessao = str(uuid.uuid4())
+        return st.session_state.id_sessao
 
     def iniciar_atividade(self, funcionario_id, nome_funcao, atividade):
         novo_registro = {
