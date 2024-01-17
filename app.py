@@ -7,6 +7,11 @@ import base64
 from io import BytesIO
 import uuid
 
+import streamlit as st
+import pandas as pd
+from datetime import datetime
+import uuid
+
 class RegistroAtividades:
     def __init__(self):
         self.arquivo_dados = 'dados.xlsx'
@@ -47,13 +52,14 @@ registro = RegistroAtividades()
 
 for i in range(registro.quantidade_equipe):
     st.subheader(f"Informações do Funcionário {i + 1}")
-    funcao_funcionario = st.text_input("Digite a função do funcionário:")
-    escolha_atividade = st.selectbox("Escolha a atividade:", registro.atividades_disponiveis)
+    prefixo = f"funcionario_{i + 1}"
+    funcao_funcionario = st.text_input(f"{prefixo} - Digite a função do funcionário:")
+    escolha_atividade = st.selectbox(f"{prefixo} - Escolha a atividade:", registro.atividades_disponiveis)
 
-    if st.button(f"Iniciar Atividade - Funcionário {i + 1}"):
+    if st.button(f"{prefixo} - Iniciar Atividade"):
         registro.iniciar_atividade(registro.id_sessao, funcao_funcionario, escolha_atividade)
 
-    if st.button(f"Encerrar Atividade - Funcionário {i + 1}"):
+    if st.button(f"{prefixo} - Encerrar Atividade"):
         registro.encerrar_atividade(registro.id_sessao, funcao_funcionario, escolha_atividade)
 
 # Botão para exportar para Excel
