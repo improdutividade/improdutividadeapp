@@ -7,10 +7,12 @@ import base64
 from io import BytesIO
 import uuid
 
-import streamlit as st
-import pandas as pd
-from datetime import datetime
-import uuid
+def get_binary_file_downloader_html(bin_file, file_label='File'):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    bin_str = base64.b64encode(data).decode()
+    href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">{file_label}</a>'
+    return href
 
 class RegistroAtividades:
     def __init__(self):
@@ -68,7 +70,7 @@ if st.button("Exportar para Excel"):
     st.success("Dados exportados para Excel.")
 
     # Criar link de download
-    st.markdown(f"### [**Baixar Excel**](/{registro.arquivo_dados})")
+    st.markdown(get_binary_file_downloader_html(registro.arquivo_dados, 'Baixar Excel'), unsafe_allow_html=True)
 
 # Botão para zerar dados
 if st.button("Zerar Dados"):
