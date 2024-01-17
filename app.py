@@ -33,7 +33,7 @@ class RegistroAtividades:
         return st.session_state.id_sessao
 
     def iniciar_atividade(self, id_sessao, funcao, atividade):
-        data_hora_inicio = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        data_hora_inicio = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         dados_membro = {'id': id_sessao, 'funcao': funcao, 'atividade': atividade, 'inicio': data_hora_inicio}
         self.dados_equipe.append(dados_membro)
 
@@ -41,7 +41,7 @@ class RegistroAtividades:
         for membro_equipe in self.dados_equipe:
             funcionario_id = membro_equipe['id']
             if funcionario_id == id_sessao:
-                data_hora_fim = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                data_hora_fim = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
                 membro_equipe['fim'] = data_hora_fim
                 break
 
