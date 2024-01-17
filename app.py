@@ -12,6 +12,9 @@ class RegistroAtividades:
         self.arquivo_dados = 'dados.xlsx'
         self.nome_usuario = st.text_input("Digite o seu nome de usuário:")
         self.frente_servico = st.text_input("Digite a frente de serviço:")
+        self.quantidade_equipe = st.number_input("Digite a quantidade da equipe:", min_value=1, value=1)
+        self.funcao_funcionario = st.selectbox("Selecione a função do funcionário:", ["Função A", "Função B", "Função C"])
+        self.escolha_atividade = st.selectbox("Escolha a atividade:", ["Atividade X", "Atividade Y", "Atividade Z"])
         self.id_sessao = self.obter_id_sessao()
 
     def obter_id_sessao(self):
@@ -20,50 +23,32 @@ class RegistroAtividades:
             st.session_state.id_sessao = str(uuid.uuid4())
         return st.session_state.id_sessao
 
-    def iniciar_atividade(self, funcionario_id, nome_funcao, atividade):
-        novo_registro = {
-            'ID': funcionario_id,
-            'Nome_Usuário': self.nome_usuario,
-            'Frente_Serviço': self.frente_servico,
-            'Função': nome_funcao,
-            'Atividade': atividade,
-            'Data': datetime.datetime.now(pytz.timezone('America/Sao_Paulo')).strftime("%Y-%m-%d"),
-            'Início': datetime.datetime.now(pytz.timezone('America/Sao_Paulo')).strftime("%H:%M:%S"),
-            'Fim': datetime.datetime.now(pytz.timezone('America/Sao_Paulo')).strftime("%H:%M:%S"),
-            'Duração': ''
-        }
+    def iniciar_atividade(self, id_sessao, funcao, atividade):
+        # Lógica para iniciar atividade
+        pass
 
-        df = pd.DataFrame([novo_registro])
-        df.to_excel(self.arquivo_dados, index=False, header=not st.session_state.get('dados_carregados', False))
-        st.session_state.dados_carregados = True
-        st.success("Atividade iniciada com sucesso!")
-
-    def encerrar_atividade(self, funcionario_id):
+    def encerrar_atividade(self, id_sessao, quantidade_equipe, funcao_funcionario, escolha_atividade):
+        # Lógica para encerrar atividade
+        # Aqui você precisa ajustar a leitura e manipulação do DataFrame conforme a sua necessidade
         df = pd.read_excel(self.arquivo_dados)
+        
+        for _ in range(quantidade_equipe):
+            # Simulando o encerramento para cada membro da equipe
+            funcionario_id = id_sessao  # Use o ID da sessão como identificador único do funcionário (ajuste conforme necessário)
+            funcionario_df = df[df['ID'] == funcionario_id]
 
-        funcionario_df = df[df['ID'] == funcionario_id]
+            # Atualizar o DataFrame conforme necessário
+            # ...
 
-        if len(funcionario_df) > 0:
-            inicio = funcionario_df.iloc[-1]['Início']
-            if pd.isnull(inicio):
-                st.error("Atividade ainda não iniciada para este funcionário.")
-                return
-
-            fim = datetime.datetime.now(pytz.timezone('America/Sao_Paulo'))
-            df.loc[(df['ID'] == funcionario_id) & (df.index == len(funcionario_df) - 1), 'Fim'] = fim.strftime("%H:%M:%S")
-            duracao = fim - pd.to_datetime(inicio)
-            df.loc[(df['ID'] == funcionario_id) & (df.index == len(funcionario_df) - 1), 'Duração'] = duracao
-            df.to_excel(self.arquivo_dados, index=False)
-            st.success(f"Atividade encerrada para funcionário {funcionario_id} às {fim.strftime('%H:%M:%S')}")
-        else:
-            st.error("ID do funcionário inválido.")
+            # Após a atualização, você pode salvar novamente o DataFrame no arquivo
+            # df.to_excel(self.arquivo_dados, index=False)
 
 # Utilização
 registro = RegistroAtividades()
 
 # Botões para interação do usuário
 if st.button("Iniciar Atividade"):
-    registro.iniciar_atividade(registro.id_sessao, "Função Padrão", "Atividade Padrão")
+    registro.iniciar_atividade(registro.id_sessao, registro.funcao_funcionario, registro.escolha_atividade)
 
 if st.button("Encerrar Atividade"):
-    registro.encerrar_atividade(registro.id_sessao)
+    registro.encerrar_atividade(registro.id_sessao, registro.quantidade_equipe, registro.funcao_funcionario, registro.escolha_atividade)
