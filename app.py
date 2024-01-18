@@ -7,10 +7,11 @@ import base64
 from io import BytesIO
 import uuid
 
+
 class RegistroAtividades:
-    def __init__(self):
-        self.uuid = str(uuid.uuid4())  # Adicionado identificador único para cada instância
-        self.arquivo_dados = f'registros_atividades_{self.uuid}.xlsx'  # Utilizando UUID no nome do arquivo
+    def __init__(self, user_id):
+        self.user_id = user_id
+        self.arquivo_dados = f'registros_atividades_{self.user_id}.xlsx'
         self.iniciar_arquivo_excel()
 
     # Restante do código permanece inalterado
@@ -43,8 +44,9 @@ class RegistroAtividades:
 
     # Restante do código permanece inalterado
 
-# Restante do código permanece inalterado
+# Adicionado um identificador único para cada usuário usando o UUID
+user_id = str(uuid.uuid4())
+registro = RegistroAtividades(user_id)
 
-# Adicionado um botão para reiniciar o Streamlit e evitar conflitos entre usuários simultâneos
-if st.button("Reiniciar"):
-    os.execv(sys.executable, ['python'] + sys.argv)
+# Registrar atividades da equipe
+registro.registrar_atividades_equipe()
