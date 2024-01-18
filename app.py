@@ -88,7 +88,7 @@ class RegistroAtividades:
 
         funcionario_df = df[df['ID'] == funcionario_id]
 
-        if len(funcionario_df) > 0:
+        if not funcionario_df.empty:
             inicio = funcionario_df.iloc[-1]['Início']
             if pd.isnull(inicio):
                 st.error("Atividade ainda não iniciada para este funcionário.")
@@ -106,7 +106,10 @@ class RegistroAtividades:
     def gerar_relatorio_excel(self):
         st.write(f"Dados salvos em '{self.arquivo_dados}'")
 
-        df = pd.read_excel(self.arquivo_dados) if os.path.exists(self.arquivo_dados) else pd.DataFrame()
+        if os.path.exists(self.arquivo_dados):
+            df = pd.read_excel(self.arquivo_dados)
+        else:
+            df = pd.DataFrame()
 
         if not df.empty:
             st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
