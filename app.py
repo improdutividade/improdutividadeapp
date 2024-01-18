@@ -48,4 +48,4 @@ user_id = str(uuid.uuid4())
 registro = RegistroAtividades(user_id)
 
 # Registrar atividades da equipe
-registro.registrar_atividades_equipe()
+registro.registrar_atividades()
