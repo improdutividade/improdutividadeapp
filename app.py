@@ -12,15 +12,24 @@ class RegistroAtividades:
         self.user_id = user_id
         self.arquivo_dados = f'registros_atividades_{self.user_id}.xlsx'
         self.iniciar_arquivo_excel()
+        self.iniciar_sessao()
 
     def iniciar_arquivo_excel(self):
         if not os.path.exists(self.arquivo_dados):
             df = pd.DataFrame(columns=['ID', 'Nome_Usuário', 'Frente_Serviço', 'Função', 'Atividade', 'Data', 'Início', 'Fim', 'Duração'])
             df.to_excel(self.arquivo_dados, index=False)
 
+    def iniciar_sessao(self):
+        if 'registro' not in st.session_state:
+            st.session_state.registro = {
+                'nome_usuario': '',
+                'frente_servico': '',
+                'df': pd.DataFrame()
+            }
+
     def obter_informacoes_iniciais(self):
-        self.nome_usuario = st.text_input("Digite seu nome: ").upper()
-        self.frente_servico = st.text_input("Digite a frente de serviço: ").upper()
+        st.session_state.registro['nome_usuario'] = st.text_input("Digite seu nome: ").upper()
+        st.session_state.registro['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
 
     def registrar_atividades(self):
         self.obter_informacoes_iniciais()
@@ -65,8 +74,8 @@ class RegistroAtividades:
     def iniciar_atividade(self, funcionario_id, nome_funcao, atividade):
         novo_registro = {
             'ID': funcionario_id,
-            'Nome_Usuário': self.nome_usuario,
-            'Frente_Serviço': self.frente_servico,
+            'Nome_Usuário': st.session_state.registro['nome_usuario'],
+            'Frente_Serviço': st.session_state.registro['frente_servico'],
             'Função': nome_funcao,
             'Atividade': atividade,
             'Data': datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-3))).strftime("%Y-%m-%d"),
@@ -75,16 +84,16 @@ class RegistroAtividades:
             'Duração': ''
         }
 
-        df = pd.read_excel(self.arquivo_dados) if os.path.exists(self.arquivo_dados) else pd.DataFrame()
+        df = st.session_state.registro['df']
         df = pd.concat([df, pd.DataFrame([novo_registro])], ignore_index=True)
-        df.to_excel(self.arquivo_dados, index=False)
+        st.session_state.registro['df'] = df
 
         st.success(f"Atividade '{atividade}' iniciada para funcionário {funcionario_id} ({nome_funcao})")
 
     def encerrar_atividade(self, funcionario_id):
         st.write(f"Encerrando atividade para funcionário {funcionario_id}...")
 
-        df = pd.read_excel(self.arquivo_dados)
+        df = st.session_state.registro['df']
 
         funcionario_df = df[df['ID'] == funcionario_id]
 
@@ -98,7 +107,7 @@ class RegistroAtividades:
             fim = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-3))).strftime("%H:%M:%S")
             duracao = pd.to_datetime(fim) - pd.to_datetime(inicio)
             df.loc[(df['ID'] == funcionario_id) & (df.index == len(funcionario_df) - 1), 'Duração'] = str(duracao)
-            df.to_excel(self.arquivo_dados, index=False)
+            st.session_state.registro['df'] = df
             st.success(f"Atividade encerrada para funcionário {funcionario_id} às {fim}")
         else:
             st.error("ID do funcionário inválido.")
@@ -106,10 +115,7 @@ class RegistroAtividades:
     def gerar_relatorio_excel(self):
         st.write(f"Dados salvos em '{self.arquivo_dados}'")
 
-        if os.path.exists(self.arquivo_dados):
-            df = pd.read_excel(self.arquivo_dados)
-        else:
-            df = pd.DataFrame()
+        df = st.session_state.registro['df']
 
         if not df.empty:
             st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
@@ -118,8 +124,7 @@ class RegistroAtividades:
 
     def zerar_dados(self):
         st.write("Zerando dados...")
-        df = pd.DataFrame(columns=['ID', 'Nome_Usuário', 'Frente_Serviço', 'Função', 'Atividade', 'Data', 'Início', 'Fim', 'Duração'])
-        df.to_excel(self.arquivo_dados, index=False)
+        st.session_state.registro['df'] = pd.DataFrame(columns=['ID', 'Nome_Usuário', 'Frente_Serviço', 'Função', 'Atividade', 'Data', 'Início', 'Fim', 'Duração'])
         st.success("Dados zerados. Você pode iniciar novos registros.")
 
 # Função auxiliar para criar botão de download
