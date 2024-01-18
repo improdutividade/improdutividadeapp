@@ -82,10 +82,12 @@ class RegistroAtividades:
         st.success(f"Atividade '{atividade}' iniciada para funcionário {funcionario_id} ({nome_funcao})")
 
     def encerrar_atividade(self, funcionario_id):
+        st.write(f"Encerrando atividade para funcionário {funcionario_id}...")
+
         df = pd.read_excel(self.arquivo_dados)
-    
+
         funcionario_df = df[df['ID'] == funcionario_id]
-        
+
         if len(funcionario_df) > 0:
             inicio = funcionario_df.iloc[-1]['Início']
             if pd.isnull(inicio):
@@ -93,25 +95,26 @@ class RegistroAtividades:
                 return
 
             df.loc[(df['ID'] == funcionario_id) & (df.index == len(funcionario_df) - 1), 'Fim'] = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-3))).strftime("%H:%M:%S")
-            fim = datetime.datetime.now()
-            duracao = fim - pd.to_datetime(inicio)
-            df.loc[(df['ID'] == funcionario_id) & (df.index == len(funcionario_df) - 1), 'Duração'] = duracao
+            fim = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-3))).strftime("%H:%M:%S")
+            duracao = pd.to_datetime(fim) - pd.to_datetime(inicio)
+            df.loc[(df['ID'] == funcionario_id) & (df.index == len(funcionario_df) - 1), 'Duração'] = str(duracao)
             df.to_excel(self.arquivo_dados, index=False)
-            st.success(f"Atividade encerrada para funcionário {funcionario_id} às {fim.strftime('%H:%M:%S')}")
+            st.success(f"Atividade encerrada para funcionário {funcionario_id} às {fim}")
         else:
             st.error("ID do funcionário inválido.")
 
     def gerar_relatorio_excel(self):
         st.write(f"Dados salvos em '{self.arquivo_dados}'")
-    
+
         df = pd.read_excel(self.arquivo_dados) if os.path.exists(self.arquivo_dados) else pd.DataFrame()
-    
+
         if not df.empty:
             st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
         else:
             st.warning("Nenhum dado disponível para exportação.")
-        
+
     def zerar_dados(self):
+        st.write("Zerando dados...")
         df = pd.DataFrame(columns=['ID', 'Nome_Usuário', 'Frente_Serviço', 'Função', 'Atividade', 'Data', 'Início', 'Fim', 'Duração'])
         df.to_excel(self.arquivo_dados, index=False)
         st.success("Dados zerados. Você pode iniciar novos registros.")
