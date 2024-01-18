@@ -101,16 +101,16 @@ class RegistroAtividades:
         else:
             st.error("ID do funcionário inválido.")
 
-    def gerar_relatorio_excel(self):
-        st.write(f"Dados salvos em '{self.arquivo_dados}'")
+   def gerar_relatorio_excel(self):
+    st.write(f"Dados salvos em '{self.arquivo_dados}'")
 
-        df = pd.read_excel(self.arquivo_dados) if os.path.exists(self.arquivo_dados) else pd.DataFrame()
+    df = pd.read_excel(self.arquivo_dados) if os.path.exists(self.arquivo_dados) else pd.DataFrame()
 
-        if not df.empty:
-            st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
-        else:
-            st.warning("Nenhum dado disponível para exportação.")
-
+    if not df.empty:
+        st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
+    else:
+        st.warning("Nenhum dado disponível para exportação.")
+        
     def zerar_dados(self):
         df = pd.DataFrame(columns=['ID', 'Nome_Usuário', 'Frente_Serviço', 'Função', 'Atividade', 'Data', 'Início', 'Fim', 'Duração'])
         df.to_excel(self.arquivo_dados, index=False)
