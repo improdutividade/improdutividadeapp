@@ -83,9 +83,9 @@ class RegistroAtividades:
 
     def encerrar_atividade(self, funcionario_id):
         df = pd.read_excel(self.arquivo_dados)
-
+    
         funcionario_df = df[df['ID'] == funcionario_id]
-
+        
         if len(funcionario_df) > 0:
             inicio = funcionario_df.iloc[-1]['Início']
             if pd.isnull(inicio):
@@ -110,7 +110,6 @@ class RegistroAtividades:
             st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
         else:
             st.warning("Nenhum dado disponível para exportação.")
-
         
     def zerar_dados(self):
         df = pd.DataFrame(columns=['ID', 'Nome_Usuário', 'Frente_Serviço', 'Função', 'Atividade', 'Data', 'Início', 'Fim', 'Duração'])
