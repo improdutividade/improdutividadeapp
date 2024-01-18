@@ -24,7 +24,7 @@ class RegistroAtividades:
             st.session_state.registro = {
                 'nome_usuario': '',
                 'frente_servico': '',
-                'df': pd.DataFrame()
+                'df': pd.DataFrame(columns=['ID', 'Nome_Usuário', 'Frente_Serviço', 'Função', 'Atividade', 'Data', 'Início', 'Fim', 'Duração'])
             }
 
     def obter_informacoes_iniciais(self):
@@ -104,11 +104,11 @@ class RegistroAtividades:
                 return
 
             df.loc[(df['ID'] == funcionario_id) & (df.index == len(funcionario_df) - 1), 'Fim'] = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-3))).strftime("%H:%M:%S")
-            fim = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-3))).strftime("%H:%M:%S")
-            duracao = pd.to_datetime(fim) - pd.to_datetime(inicio)
-            df.loc[(df['ID'] == funcionario_id) & (df.index == len(funcionario_df) - 1), 'Duração'] = str(duracao)
+            fim = datetime.datetime.now()
+            duracao = fim - pd.to_datetime(inicio)
+            df.loc[(df['ID'] == funcionario_id) & (df.index == len(funcionario_df) - 1), 'Duração'] = duracao
             st.session_state.registro['df'] = df
-            st.success(f"Atividade encerrada para funcionário {funcionario_id} às {fim}")
+            st.success(f"Atividade encerrada para funcionário {funcionario_id} às {fim.strftime('%H:%M:%S')}")
         else:
             st.error("ID do funcionário inválido.")
 
@@ -118,6 +118,7 @@ class RegistroAtividades:
         df = st.session_state.registro['df']
 
         if not df.empty:
+            df.to_excel(self.arquivo_dados, index=False)
             st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
         else:
             st.warning("Nenhum dado disponível para exportação.")
