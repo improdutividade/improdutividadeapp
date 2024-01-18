@@ -7,7 +7,6 @@ import base64
 from io import BytesIO
 import uuid
 
-
 class RegistroAtividades:
     def __init__(self, user_id):
         self.user_id = user_id
@@ -36,7 +35,7 @@ class RegistroAtividades:
             'Duração': ''
         }
 
-        df = pd.read_excel(self.arquivo_dados)
+        df = pd.read_excel(self.arquivo_dados) if os.path.exists(self.arquivo_dados) else pd.DataFrame()
         df = pd.concat([df, pd.DataFrame([novo_registro])], ignore_index=True)
         df.to_excel(self.arquivo_dados, index=False)
 
