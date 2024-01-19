@@ -232,8 +232,8 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
 user_id = str(uuid.uuid4())
 analise = AnaliseAtividades(user_id)
 
-# Chame essa função quando quiser iniciar a análise
-analise.iniciar_analise()
+if 'analise' not in st.session_state:
+    analise.iniciar_analise()
 
 def descricao_app1():
     st.title("App 1 - Registro de Atividades (AtividadeTracker)")
