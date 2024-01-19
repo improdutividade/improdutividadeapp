@@ -186,10 +186,10 @@ class AnaliseAtividades:
     
     def obter_informacoes_iniciais(self):
         if 'nome_usuario' not in st.session_state.analise:
-            st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:", key=f"nome_usuario_{self.user_id}").upper()
+            st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:").upper()
 
         if 'frente_servico' not in st.session_state.analise:
-            st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço:", key=f"frente_servico_{self.user_id}").upper()
+            st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço:").upper()
 
     def iniciar_analise(self):
         self.obter_informacoes_iniciais()
@@ -201,6 +201,8 @@ class AnaliseAtividades:
 
         # Adiciona botão para download do Excel preenchido
         if st.button("Baixar Relatório Excel"):
+            atividades_quantidades = self.selecionar_atividades()
+            self.registrar_atividades_quantidades(atividades_quantidades)
             self.gerar_relatorio_excel()
 
     def registrar_atividade(self, funcionario_id):
@@ -280,10 +282,6 @@ def main():
     elif app_choice == "App 2 - ConstruData Insights":
         # Implementando a lógica do App 2
         analise.iniciar_analise()
-        analise.obter_informacoes_iniciais()
-        atividades_quantidades = analise.selecionar_atividades()
-        analise.registrar_atividades_quantidades(atividades_quantidades)
-        analise.gerar_relatorio_excel()
 
     elif app_choice == "Informações":
         informacoes()  # Adicione a lógica do App de Informações aqui
