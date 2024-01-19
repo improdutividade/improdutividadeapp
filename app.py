@@ -156,11 +156,17 @@ class AnaliseAtividades:
     def iniciar_sessao(self):
         if 'analise' not in st.session_state:
             st.session_state.analise = {
-                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
+                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade']),
+                'nome_usuario': '',
+                'frente_servico': ''
             }
 
     def iniciar_analise(self):
         st.write("Iniciando análise...")
+
+    def obter_informacoes_iniciais(self):
+        st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome: ").upper()
+        st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
 
     def selecionar_atividades(self):
         opcoes_atividades = [
@@ -205,7 +211,12 @@ class AnaliseAtividades:
             st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
         else:
             st.warning("Nenhum dado disponível para exportação.")
-            
+
+    def zerar_dados(self):
+        st.write("Zerando dados...")
+        st.session_state.analise['df'] = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
+        st.success("Dados zerados. Você pode iniciar novos registros.")
+
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
 registro = RegistroAtividades(user_id)
