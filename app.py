@@ -265,7 +265,7 @@ def graficos():
 # Função principal
 def main():
     st.sidebar.title("Menu de Navegação")
-    app_choice = st.sidebar.radio("Selecione uma opção:", ("App 1 - AtividadeTracker ", "App 2 - ConstruData Insights", "Informações", "Gráficos"))
+    app_choice = st.sidebar.radio("Selecione uma opção:", ("App 1", "App 2", "Informações", "Gráficos"))
 
     if app_choice == "App 1":
         registro.registrar_atividades()
