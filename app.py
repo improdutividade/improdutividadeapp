@@ -150,7 +150,7 @@ class AnaliseAtividades:
 
     def iniciar_arquivo_excel(self):
         if not os.path.exists(self.arquivo_dados):
-            df = pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
+            df = pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Quantidade'])
             df.to_excel(self.arquivo_dados, index=False)
 
     def iniciar_sessao(self):
@@ -158,8 +158,20 @@ class AnaliseAtividades:
             st.session_state.analise = {
                 'nome_usuario': '',
                 'frente_servico': '',
-                'df': pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
+                'quantidade_equipe': 0,
+                'atividades_quantidades': {},
+                'df': pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Quantidade'])
             }
+
+    def obter_informacoes_iniciais(self):
+        if 'nome_usuario' not in st.session_state.analise:
+            st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:").upper()
+
+        if 'frente_servico' not in st.session_state.analise:
+            st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço:").upper()
+
+        if 'quantidade_equipe' not in st.session_state.analise or st.session_state.analise['quantidade_equipe'] == 0:
+            st.session_state.analise['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
 
     def selecionar_atividades(self):
         opcoes_atividades = [
@@ -172,48 +184,23 @@ class AnaliseAtividades:
         atividades_quantidades = {}
 
         for atividade in opcoes_atividades:
-            # Adicionando o sufixo exclusivo ao key
             key = f"{atividade}_{self.user_id}"
             quantidade = st.number_input(
                 f"Quantidade de pessoas fazendo '{atividade}':",
-                min_value=0, step=1, value=0,
-                key=key  # Utilizando o key aqui
+                min_value=0, max_value=st.session_state.analise['quantidade_equipe'], step=1, value=0,
+                key=key
             )
             if quantidade > 0:
                 atividades_quantidades[atividade] = quantidade
 
         return atividades_quantidades
-    
-    def obter_informacoes_iniciais(self):
-        if 'nome_usuario' not in st.session_state.analise:
-            st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:").upper()
 
-        if 'frente_servico' not in st.session_state.analise:
-            st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço:").upper()
-
-    def iniciar_analise(self):
-        self.obter_informacoes_iniciais()
-
-        quantidade_equipe = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
-
-        for i in range(1, quantidade_equipe + 1):
-            self.registrar_atividade(i)
-
-        # Adiciona botão para download do Excel preenchido
-        if st.button("Baixar Relatório Excel"):
-            atividades_quantidades = self.selecionar_atividades()
-            self.registrar_atividades_quantidades(atividades_quantidades)
-            self.gerar_relatorio_excel()
-
-    def registrar_atividade(self, funcionario_id):
-        st.write(f"Funcionário {funcionario_id}:")
-        atividades_quantidades = self.selecionar_atividades()
-
+    def registrar_atividades_quantidades(self, atividades_quantidades):
         for atividade, quantidade in atividades_quantidades.items():
             novo_registro = {
+                'Nome_Usuario': st.session_state.analise['nome_usuario'],
+                'Frente_Servico': st.session_state.analise['frente_servico'],
                 'Atividade': atividade,
-                'Início': datetime.datetime.now().strftime("%H:%M:%S"),
-                'Fim': '',
                 'Quantidade': quantidade
             }
 
@@ -221,7 +208,39 @@ class AnaliseAtividades:
             df = pd.concat([df, pd.DataFrame([novo_registro])], ignore_index=True)
             st.session_state.analise['df'] = df
 
-            st.success(f"Atividade '{atividade}' registrada com {quantidade} pessoa(s).")
+    def gerar_relatorio_excel(self):
+        df = st.session_state.analise['df']
+        df.to_excel(self.arquivo_dados, index=False)
+        st.success("Relatório Excel gerado com sucesso!")
+
+    def zerar_analise(self):
+        st.session_state.analise = {
+            'nome_usuario': '',
+            'frente_servico': '',
+            'quantidade_equipe': 0,
+            'atividades_quantidades': {},
+            'df': pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Quantidade'])
+        }
+        st.success("Análise zerada. Agora você pode iniciar uma nova análise.")
+
+    def iniciar_analise(self):
+        self.obter_informacoes_iniciais()
+
+        quantidade_equipe = st.session_state.analise['quantidade_equipe']
+
+        for i in range(1, quantidade_equipe + 1):
+            st.write(f"Funcionário {i}:")
+            atividades_quantidades = self.selecionar_atividades()
+            self.registrar_atividades_quantidades(atividades_quantidades)
+
+        st.write("Análise concluída para a equipe.")
+
+        # Adiciona botões
+        if st.button("Baixar Relatório Excel"):
+            self.gerar_relatorio_excel()
+
+        if st.button("Zerar Análise"):
+            self.zerar_analise()
 
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
