@@ -159,18 +159,17 @@ class AnaliseAtividades:
                 'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade']),
                 'nome_usuario': '',
                 'frente_servico': '',
-                'informacoes_iniciais_obtidas': False
+                'quantidade_equipe': 0
             }
 
     def iniciar_analise(self):
         st.write("Iniciando análise...")
-        if not st.session_state.analise.get('informacoes_iniciais_obtidas', False):
-            self.obter_informacoes_iniciais()
-            st.session_state.analise['informacoes_iniciais_obtidas'] = True
+        self.obter_informacoes_iniciais()
 
     def obter_informacoes_iniciais(self):
         st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome: ").upper()
         st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
+        st.session_state.analise['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
 
     def selecionar_atividades(self):
         opcoes_atividades = [
@@ -219,13 +218,22 @@ class AnaliseAtividades:
     def zerar_dados(self):
         st.write("Zerando dados...")
         st.session_state.analise['df'] = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
-        st.session_state.analise['informacoes_iniciais_obtidas'] = False  # Resetar para solicitar informações novamente
         st.success("Dados zerados. Você pode iniciar novos registros.")
+
+# Função auxiliar para criar botão de download
+def get_binary_file_downloader_html(bin_file, file_label='File'):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    bin_str = base64.b64encode(data).decode()
+    href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">{file_label}</a>'
+    return href
 
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
-registro = RegistroAtividades(user_id)
 analise = AnaliseAtividades(user_id)
+
+# Chame essa função quando quiser iniciar a análise
+analise.iniciar_analise()
 
 def descricao_app1():
     st.title("App 1 - Registro de Atividades (AtividadeTracker)")
