@@ -7,6 +7,20 @@ import base64
 from io import BytesIO
 import uuid
 
+from apps import app1, app2  # Importe seus scripts de aplicativos
+
+def main():
+    st.sidebar.title("Menu de Navegação")
+    app_choice = st.sidebar.radio("Selecione um aplicativo:", ("App 1", "App 2"))
+
+    if app_choice == "App 1":
+        app1.run()
+    elif app_choice == "App 2":
+        app2.run()
+
+if __name__ == "__main__":
+    main()
+
 def run():
     st.title("App 1")
 
