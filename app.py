@@ -205,15 +205,7 @@ class AnaliseAtividades:
             st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
         else:
             st.warning("Nenhum dado disponível para exportação.")
-
-# Função auxiliar para criar botão de download
-def get_binary_file_downloader_html(bin_file, file_label='File'):
-    with open(bin_file, 'rb') as f:
-        data = f.read()
-    bin_str = base64.b64encode(data).decode()
-    href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">{file_label}</a>'
-    return href
-
+            
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
 registro = RegistroAtividades(user_id)
