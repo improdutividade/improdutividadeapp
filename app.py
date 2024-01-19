@@ -174,7 +174,7 @@ class AnaliseAtividades:
         for atividade in opcoes_atividades:
             quantidade = st.number_input(f"Quantidade de pessoas fazendo '{atividade}':", min_value=0, step=1, value=0)
             if quantidade > 0:
-            atividades_quantidades[atividade] = quantidade
+                atividades_quantidades[atividade] = quantidade
 
         return atividades_quantidades
     
