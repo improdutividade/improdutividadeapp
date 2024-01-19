@@ -250,10 +250,10 @@ def main():
         analise.gerar_relatorio_excel()
         
     elif app_choice == "Informações":
-        informacoes()
+        informacoes()  # Adicionei a chamada à função informacoes
 
     elif app_choice == "Gráficos":
-        graficos()
+        graficos()  # Adicionei a chamada à função graficos
 
 if __name__ == "__main__":
     main()
