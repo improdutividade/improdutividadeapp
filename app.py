@@ -233,6 +233,14 @@ def main():
         atividades_quantidades = analise.selecionar_atividades()
         analise.registrar_atividades_quantidades(atividades_quantidades)
         analise.gerar_relatorio_excel()
+        elif app_choice == "Informações":
+        informacoes()
+
+    elif app_choice == "Gráficos":
+        graficos()
+
+    elif app_choice == "Propósito":
+        proposito()
 
 if __name__ == "__main__":
     main()
