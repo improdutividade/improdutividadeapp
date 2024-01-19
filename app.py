@@ -161,7 +161,7 @@ class AnaliseAtividades:
                 'df': pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
             }
 
-        def obter_informacoes_iniciais(self):
+    def obter_informacoes_iniciais(self):
         if 'nome_usuario' not in st.session_state.analise:
             st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:", key=f"nome_usuario_{self.user_id}").upper()
 
