@@ -7,6 +7,9 @@ import base64
 from io import BytesIO
 import uuid
 
+def run():
+    st.title("App 1")
+
 class RegistroAtividades:
     def __init__(self, user_id):
         self.user_id = user_id
@@ -138,6 +141,9 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
 
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
+
+def run():
+    st.title("App 2")
 registro = RegistroAtividades(user_id)
 
 # Registrar atividades da equipe
