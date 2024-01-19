@@ -161,69 +161,42 @@ class AnaliseAtividades:
                 'df': pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
             }
 
-    def obter_informacoes_iniciais(self):
+        def obter_informacoes_iniciais(self):
         if 'nome_usuario' not in st.session_state.analise:
             st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:", key=f"nome_usuario_{self.user_id}").upper()
 
         if 'frente_servico' not in st.session_state.analise:
             st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço:", key=f"frente_servico_{self.user_id}").upper()
-    
-    def selecionar_atividades(self):
-        opcoes_atividades = [
-            "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
-            "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
-            "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
-            "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"
-        ]
 
-        atividades_quantidades = {}
+    def iniciar_analise(self):
+        self.obter_informacoes_iniciais()
 
-        for atividade in opcoes_atividades:
-            quantidade = st.number_input(f"Quantidade de pessoas fazendo '{atividade}':", min_value=0, step=1, value=0, key=f"{atividade}_{self.user_id}")
-            if quantidade > 0:
-                atividades_quantidades[atividade] = quantidade
+        quantidade_equipe = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
 
-        return atividades_quantidades
+        for i in range(1, quantidade_equipe + 1):
+            self.registrar_atividade(i)
 
-    def registrar_atividades_quantidades(self, atividades_quantidades):
-        df = st.session_state.analise['df']
+        # Adiciona botão para download do Excel preenchido
+        if st.button("Baixar Relatório Excel"):
+            self.gerar_relatorio_excel()
+
+    def registrar_atividade(self, funcionario_id):
+        st.write(f"Funcionário {funcionario_id}:")
+        atividades_quantidades = self.selecionar_atividades()
 
         for atividade, quantidade in atividades_quantidades.items():
             novo_registro = {
-                'Nome_Usuario': st.session_state.analise['nome_usuario'],
-                'Frente_Servico': st.session_state.analise['frente_servico'],
                 'Atividade': atividade,
                 'Início': datetime.datetime.now().strftime("%H:%M:%S"),
                 'Fim': '',
                 'Quantidade': quantidade
             }
 
+            df = st.session_state.analise['df']
             df = pd.concat([df, pd.DataFrame([novo_registro])], ignore_index=True)
             st.session_state.analise['df'] = df
 
             st.success(f"Atividade '{atividade}' registrada com {quantidade} pessoa(s).")
-
-    def iniciar_analise(self):
-        print("Iniciando análise...")
-        print(f"Nome do usuário: {st.session_state.analise['nome_usuario']}")
-        print(f"Frente de serviço: {st.session_state.analise['frente_servico']}")
-        
-        # Adicione mais informações que achar relevantes para debugar
-        
-        self.obter_informacoes_iniciais()
-    
-    def gerar_relatorio_excel(self):
-        st.write(f"Dados salvos em '{self.arquivo_dados}'")
-
-        df = st.session_state.analise['df']
-
-        if not df.empty:
-            df.to_excel(self.arquivo_dados, index=False)
-            st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
-        else:
-            st.warning("Nenhum dado disponível para exportação.")
-
-# Restante do seu código...
 
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
