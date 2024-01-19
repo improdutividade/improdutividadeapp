@@ -210,8 +210,19 @@ class AnaliseAtividades:
 
     def gerar_relatorio_excel(self):
         df = st.session_state.analise['df']
-        df.to_excel(self.arquivo_dados, index=False)
-        st.success("Relatório Excel gerado com sucesso!")
+
+        # Cria um link para download do arquivo Excel
+        output = io.BytesIO()
+        writer = pd.ExcelWriter(output, engine='xlsxwriter')
+        df.to_excel(writer, index=False, sheet_name='Sheet1')
+        writer.save()
+        excel_data = output.getvalue()
+        output.seek(0)
+
+        # Gera um link de download
+        b64 = base64.b64encode(excel_data).decode()
+        href = f'<a href="data:application/octet-stream;base64,{b64}" download="analise_atividades_{self.user_id}.xlsx">Baixar Relatório Excel</a>'
+        st.markdown(href, unsafe_allow_html=True)
 
     def zerar_analise(self):
         st.session_state.analise = {
