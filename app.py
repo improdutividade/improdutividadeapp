@@ -161,7 +161,7 @@ class AnaliseAtividades:
                 'df': pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
             }
 
-    def selecionar_atividades(self):
+        def selecionar_atividades(self):
         opcoes_atividades = [
             "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
             "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
@@ -172,9 +172,12 @@ class AnaliseAtividades:
         atividades_quantidades = {}
 
         for atividade in opcoes_atividades:
+            # Adicionando o sufixo exclusivo ao key
+            key = f"{atividade}_{self.user_id}"
             quantidade = st.number_input(
                 f"Quantidade de pessoas fazendo '{atividade}':",
-                min_value=0, step=1, value=0
+                min_value=0, step=1, value=0,
+                key=key  # Utilizando o key aqui
             )
             if quantidade > 0:
                 atividades_quantidades[atividade] = quantidade
