@@ -221,17 +221,18 @@ analise = AnaliseAtividades(user_id)
 
 def informacoes():
     st.title("Informações")
-    # Conteúdo para a aba de Informações aqui
+    st.write("Bem-vindo à página de informações. Aqui você encontrará detalhes sobre os aplicativos.")
+
+    st.header("Sobre o App 1:")
+    st.write("O App 1 é projetado para registrar atividades individuais de membros da equipe.")
+
+    st.header("Sobre o App 2:")
+    st.write("O App 2 é destinado a analisar a distribuição de pessoas em diferentes atividades no setor da construção civil.")
 
 # Gráficos
 def graficos():
     st.title("Gráficos")
-    # Conteúdo para a aba de Gráficos aqui
-
-# Propósito
-def proposito():
-    st.title("Propósito")
-    # Conteúdo para a aba de Propósito aqui
+    st.write("Bem-vindo à página de gráficos. Aqui você encontrará representações visuais baseadas nos dados coletados.")
 
 # Função principal
 def main():
@@ -247,14 +248,12 @@ def main():
         atividades_quantidades = analise.selecionar_atividades()
         analise.registrar_atividades_quantidades(atividades_quantidades)
         analise.gerar_relatorio_excel()
-        elif app_choice == "Informações":
+        
+    elif app_choice == "Informações":
         informacoes()
 
     elif app_choice == "Gráficos":
         graficos()
-
-    elif app_choice == "Propósito":
-        proposito()
 
 if __name__ == "__main__":
     main()
