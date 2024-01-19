@@ -168,14 +168,18 @@ class AnaliseAtividades:
             "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
             "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"
         ]
-
+    
         atividades_quantidades = {}
-
+    
         for atividade in opcoes_atividades:
-            quantidade = st.number_input(f"Quantidade de pessoas fazendo '{atividade}':", min_value=0, step=1, value=0)
+            quantidade = st.number_input(
+                f"Quantidade de pessoas fazendo '{atividade}':",
+                min_value=0, step=1, value=0,
+                key=f"{atividade.replace(' ', '_').lower()}_input"  # Key única para cada input
+            )
             if quantidade > 0:
                 atividades_quantidades[atividade] = quantidade
-
+    
         return atividades_quantidades
     
     def obter_informacoes_iniciais(self):
