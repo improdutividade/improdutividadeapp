@@ -6,6 +6,7 @@ import os
 import base64
 from io import BytesIO
 import uuid
+import io
 
 class RegistroAtividades:
     def __init__(self, user_id):
