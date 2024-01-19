@@ -150,7 +150,7 @@ class AnaliseAtividades:
 
     def iniciar_arquivo_excel(self):
         if not os.path.exists(self.arquivo_dados):
-            df = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
+            df = pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
             df.to_excel(self.arquivo_dados, index=False)
 
     def iniciar_sessao(self):
@@ -158,11 +158,8 @@ class AnaliseAtividades:
             st.session_state.analise = {
                 'nome_usuario': '',
                 'frente_servico': '',
-                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
+                'df': pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
             }
-
-    def iniciar_analise(self):
-        st.write("Iniciando análise...")
 
     def obter_informacoes_iniciais(self):
         st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:", key=f"nome_usuario_{self.user_id}").upper()
@@ -190,6 +187,8 @@ class AnaliseAtividades:
 
         for atividade, quantidade in atividades_quantidades.items():
             novo_registro = {
+                'Nome_Usuario': st.session_state.analise['nome_usuario'],
+                'Frente_Servico': st.session_state.analise['frente_servico'],
                 'Atividade': atividade,
                 'Início': datetime.datetime.now().strftime("%H:%M:%S"),
                 'Fim': '',
@@ -211,6 +210,13 @@ class AnaliseAtividades:
             st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
         else:
             st.warning("Nenhum dado disponível para exportação.")
+
+# Remova a função iniciar_analise do código principal
+
+# Adicionado um identificador único para cada usuário usando o UUID
+user_id = str(uuid.uuid4())
+registro = RegistroAtividades(user_id)
+analise = AnaliseAtividades(user_id)
 
 def descricao_app1():
     st.title("App 1 - Registro de Atividades (AtividadeTracker)")
