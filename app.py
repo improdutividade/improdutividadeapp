@@ -176,7 +176,7 @@ class AnaliseAtividades:
         atividades_quantidades = {}
 
         for atividade in opcoes_atividades:
-            quantidade = st.number_input(f"Quantidade de pessoas fazendo '{atividade}':", min_value=0, step=1, value=0)
+            quantidade = st.number_input(f"Quantidade de pessoas fazendo '{atividade}':", min_value=0, step=1, value=0, key=f"{atividade}_{self.user_id}")
             if quantidade > 0:
                 atividades_quantidades[atividade] = quantidade
 
@@ -210,8 +210,6 @@ class AnaliseAtividades:
             st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
         else:
             st.warning("Nenhum dado disponível para exportação.")
-
-# Remova a função iniciar_analise do código principal
 
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
