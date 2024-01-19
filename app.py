@@ -150,7 +150,7 @@ class AnaliseAtividades:
 
     def iniciar_arquivo_excel(self):
         if not os.path.exists(self.arquivo_dados):
-            df = pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
+            df = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
             df.to_excel(self.arquivo_dados, index=False)
 
     def iniciar_sessao(self):
@@ -158,18 +158,16 @@ class AnaliseAtividades:
             st.session_state.analise = {
                 'nome_usuario': '',
                 'frente_servico': '',
-                'quantidade_equipe': 0,
-                'df': pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
+                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
             }
 
     def iniciar_analise(self):
         st.write("Iniciando análise...")
-        self.obter_informacoes_iniciais()
 
     def obter_informacoes_iniciais(self):
         st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:", key=f"nome_usuario_{self.user_id}").upper()
         st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço:", key=f"frente_servico_{self.user_id}").upper()
-    
+
     def selecionar_atividades(self):
         opcoes_atividades = [
             "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
@@ -192,8 +190,6 @@ class AnaliseAtividades:
 
         for atividade, quantidade in atividades_quantidades.items():
             novo_registro = {
-                'Nome_Usuario': st.session_state.analise['nome_usuario'],
-                'Frente_Servico': st.session_state.analise['frente_servico'],
                 'Atividade': atividade,
                 'Início': datetime.datetime.now().strftime("%H:%M:%S"),
                 'Fim': '',
@@ -215,26 +211,6 @@ class AnaliseAtividades:
             st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
         else:
             st.warning("Nenhum dado disponível para exportação.")
-
-    def zerar_dados(self):
-        st.write("Zerando dados...")
-        st.session_state.analise['df'] = pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
-        st.success("Dados zerados. Você pode iniciar novos registros.")
-
-# Função auxiliar para criar botão de download
-def get_binary_file_downloader_html(bin_file, file_label='File'):
-    with open(bin_file, 'rb') as f:
-        data = f.read()
-    bin_str = base64.b64encode(data).decode()
-    href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">{file_label}</a>'
-    return href
-
-# Adicionado um identificador único para cada usuário usando o UUID
-user_id = str(uuid.uuid4())
-analise = AnaliseAtividades(user_id)
-
-# Chame essa função quando quiser iniciar a análise
-analise.iniciar_analise()
 
 def descricao_app1():
     st.title("App 1 - Registro de Atividades (AtividadeTracker)")
@@ -290,15 +266,16 @@ def main():
     elif app_choice == "App 2 - ConstruData Insights":
         # Implementando a lógica do App 2
         analise.iniciar_analise()
+        analise.obter_informacoes_iniciais()  # Adicione esta linha para obter as informações iniciais
         atividades_quantidades = analise.selecionar_atividades()
         analise.registrar_atividades_quantidades(atividades_quantidades)
         analise.gerar_relatorio_excel()
         
     elif app_choice == "Informações":
-        informacoes()  # Adicionei a chamada à função informacoes
+        informacoes()
 
     elif app_choice == "Gráficos":
-        graficos()  # Adicionei a chamada à função graficos
+        graficos()
 
 if __name__ == "__main__":
     main()
