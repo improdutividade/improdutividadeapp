@@ -167,10 +167,9 @@ class AnaliseAtividades:
         self.obter_informacoes_iniciais()
 
     def obter_informacoes_iniciais(self):
-        st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome: ").upper()
-        st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
-        st.session_state.analise['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
-
+    st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:", key=f"nome_usuario_{self.user_id}").upper()
+    st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço:", key=f"frente_servico_{self.user_id}").upper()
+    
     def selecionar_atividades(self):
         opcoes_atividades = [
             "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
