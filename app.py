@@ -162,9 +162,12 @@ class AnaliseAtividades:
             }
 
     def obter_informacoes_iniciais(self):
-        st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:").upper()
-        st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço:").upper()
+        if 'nome_usuario' not in st.session_state.analise:
+            st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:", key=f"nome_usuario_{self.user_id}").upper()
 
+        if 'frente_servico' not in st.session_state.analise:
+            st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço:", key=f"frente_servico_{self.user_id}").upper()
+    
     def selecionar_atividades(self):
         opcoes_atividades = [
             "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
