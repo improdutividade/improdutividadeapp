@@ -230,7 +230,11 @@ class AnaliseAtividades:
 
         for i in range(1, quantidade_equipe + 1):
             st.write(f"Funcionário {i}:")
+
+            # Obter atividades para o funcionário atual
             atividades_quantidades = self.selecionar_atividades()
+
+            # Registrar atividades no dataframe
             self.registrar_atividades_quantidades(atividades_quantidades)
 
         st.write("Análise concluída para a equipe.")
