@@ -219,6 +219,20 @@ user_id = str(uuid.uuid4())
 registro = RegistroAtividades(user_id)
 analise = AnaliseAtividades(user_id)
 
+def informacoes():
+    st.title("Informações")
+    # Conteúdo para a aba de Informações aqui
+
+# Gráficos
+def graficos():
+    st.title("Gráficos")
+    # Conteúdo para a aba de Gráficos aqui
+
+# Propósito
+def proposito():
+    st.title("Propósito")
+    # Conteúdo para a aba de Propósito aqui
+
 # Função principal
 def main():
     st.sidebar.title("Menu de Navegação")
