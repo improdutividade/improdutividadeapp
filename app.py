@@ -161,6 +161,23 @@ class AnaliseAtividades:
                 'df': pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
             }
 
+    def selecionar_atividades(self):
+    opcoes_atividades = [
+        "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
+        "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
+        "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
+        "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"
+    ]
+
+    atividades_quantidades = {}
+
+    for atividade in opcoes_atividades:
+        quantidade = st.number_input(f"Quantidade de pessoas fazendo '{atividade}':", min_value=0, step=1, value=0)
+        if quantidade > 0:
+            atividades_quantidades[atividade] = quantidade
+
+    return atividades_quantidades
+    
     def obter_informacoes_iniciais(self):
         if 'nome_usuario' not in st.session_state.analise:
             st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:", key=f"nome_usuario_{self.user_id}").upper()
