@@ -211,6 +211,8 @@ class AnaliseAtividades:
         else:
             st.warning("Nenhum dado disponível para exportação.")
 
+# Restante do seu código...
+
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
 registro = RegistroAtividades(user_id)
@@ -270,16 +272,16 @@ def main():
     elif app_choice == "App 2 - ConstruData Insights":
         # Implementando a lógica do App 2
         analise.iniciar_analise()
-        analise.obter_informacoes_iniciais()  # Adicione esta linha para obter as informações iniciais
+        analise.obter_informacoes_iniciais()
         atividades_quantidades = analise.selecionar_atividades()
         analise.registrar_atividades_quantidades(atividades_quantidades)
         analise.gerar_relatorio_excel()
-        
+
     elif app_choice == "Informações":
-        informacoes()
+        informacoes()  # Adicione a lógica do App de Informações aqui
 
     elif app_choice == "Gráficos":
-        graficos()
+        graficos()  # Adicione a lógica do App de Gráficos aqui
 
 if __name__ == "__main__":
     main()
