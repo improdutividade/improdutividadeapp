@@ -150,29 +150,17 @@ class AnaliseAtividades:
 
     def iniciar_arquivo_excel(self):
         if not os.path.exists(self.arquivo_dados):
-            df = pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
+            df = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
             df.to_excel(self.arquivo_dados, index=False)
 
     def iniciar_sessao(self):
         if 'analise' not in st.session_state:
             st.session_state.analise = {
-                'nome_usuario': '',
-                'frente_servico': '',
-                'quantidade_equipe': 0,
-                'df': pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
+                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
             }
 
     def iniciar_analise(self):
         st.write("Iniciando análise...")
-        self.obter_informacoes_iniciais()
-
-       def obter_informacoes_iniciais(self):
-        # Usar um ID específico para evitar DuplicateWidgetID
-        nome_usuario_id = f"nome_usuario_{self.user_id}"
-        st.session_state.registro['nome_usuario'] = st.text_input("Digite seu nome:", key=nome_usuario_id).upper()
-
-        frente_servico_id = f"frente_servico_{self.user_id}"
-        st.session_state.registro['frente_servico'] = st.text_input("Digite a frente de serviço:", key=frente_servico_id).upper()
 
     def selecionar_atividades(self):
         opcoes_atividades = [
@@ -196,8 +184,6 @@ class AnaliseAtividades:
 
         for atividade, quantidade in atividades_quantidades.items():
             novo_registro = {
-                'Nome_Usuario': st.session_state.analise['nome_usuario'],
-                'Frente_Servico': st.session_state.analise['frente_servico'],
                 'Atividade': atividade,
                 'Início': datetime.datetime.now().strftime("%H:%M:%S"),
                 'Fim': '',
@@ -220,11 +206,6 @@ class AnaliseAtividades:
         else:
             st.warning("Nenhum dado disponível para exportação.")
 
-    def zerar_dados(self):
-        st.write("Zerando dados...")
-        st.session_state.analise['df'] = pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
-        st.success("Dados zerados. Você pode iniciar novos registros.")
-
 # Função auxiliar para criar botão de download
 def get_binary_file_downloader_html(bin_file, file_label='File'):
     with open(bin_file, 'rb') as f:
@@ -235,10 +216,8 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
 
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
+registro = RegistroAtividades(user_id)
 analise = AnaliseAtividades(user_id)
-
-# Chame essa função quando quiser iniciar a análise
-analise.iniciar_analise()
 
 def descricao_app1():
     st.title("App 1 - Registro de Atividades (AtividadeTracker)")
