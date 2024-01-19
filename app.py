@@ -153,9 +153,9 @@ def main():
     app_choice = st.sidebar.radio("Selecione um aplicativo:", ("App 1", "App 2"))
 
     if app_choice == "App 1":
-        app1.run()
+        app1()
     elif app_choice == "App 2":
-        app2.run()
+        app2()
 
 if __name__ == "__main__":
     main()
