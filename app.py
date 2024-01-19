@@ -150,16 +150,16 @@ class AnaliseAtividades:
 
     def iniciar_arquivo_excel(self):
         if not os.path.exists(self.arquivo_dados):
-            df = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
+            df = pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
             df.to_excel(self.arquivo_dados, index=False)
 
     def iniciar_sessao(self):
         if 'analise' not in st.session_state:
             st.session_state.analise = {
-                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade']),
                 'nome_usuario': '',
                 'frente_servico': '',
-                'quantidade_equipe': 0
+                'quantidade_equipe': 0,
+                'df': pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
             }
 
     def iniciar_analise(self):
@@ -193,6 +193,8 @@ class AnaliseAtividades:
 
         for atividade, quantidade in atividades_quantidades.items():
             novo_registro = {
+                'Nome_Usuario': st.session_state.analise['nome_usuario'],
+                'Frente_Servico': st.session_state.analise['frente_servico'],
                 'Atividade': atividade,
                 'Início': datetime.datetime.now().strftime("%H:%M:%S"),
                 'Fim': '',
@@ -217,7 +219,7 @@ class AnaliseAtividades:
 
     def zerar_dados(self):
         st.write("Zerando dados...")
-        st.session_state.analise['df'] = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
+        st.session_state.analise['df'] = pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Início', 'Fim', 'Quantidade'])
         st.success("Dados zerados. Você pode iniciar novos registros.")
 
 # Função auxiliar para criar botão de download
@@ -232,8 +234,8 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
 user_id = str(uuid.uuid4())
 analise = AnaliseAtividades(user_id)
 
-if 'analise' not in st.session_state:
-    analise.iniciar_analise()
+# Chame essa função quando quiser iniciar a análise
+analise.iniciar_analise()
 
 def descricao_app1():
     st.title("App 1 - Registro de Atividades (AtividadeTracker)")
