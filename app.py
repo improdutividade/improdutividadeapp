@@ -158,11 +158,15 @@ class AnaliseAtividades:
             st.session_state.analise = {
                 'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade']),
                 'nome_usuario': '',
-                'frente_servico': ''
+                'frente_servico': '',
+                'informacoes_iniciais_obtidas': False
             }
 
     def iniciar_analise(self):
         st.write("Iniciando análise...")
+        if not st.session_state.analise['informacoes_iniciais_obtidas']:
+            self.obter_informacoes_iniciais()
+            st.session_state.analise['informacoes_iniciais_obtidas'] = True
 
     def obter_informacoes_iniciais(self):
         st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome: ").upper()
@@ -215,6 +219,7 @@ class AnaliseAtividades:
     def zerar_dados(self):
         st.write("Zerando dados...")
         st.session_state.analise['df'] = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
+        st.session_state.analise['informacoes_iniciais_obtidas'] = False  # Resetar para solicitar informações novamente
         st.success("Dados zerados. Você pode iniciar novos registros.")
 
 # Adicionado um identificador único para cada usuário usando o UUID
