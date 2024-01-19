@@ -219,7 +219,7 @@ user_id = str(uuid.uuid4())
 registro = RegistroAtividades(user_id)
 analise = AnaliseAtividades(user_id)
 
-def informacoes():
+class informacoes():
     st.title("Informações")
     st.write("Bem-vindo à página de informações. Aqui você encontrará detalhes sobre os aplicativos.")
 
@@ -230,7 +230,7 @@ def informacoes():
     st.write("O App 2 é destinado a analisar a distribuição de pessoas em diferentes atividades no setor da construção civil.")
 
 # Gráficos
-def graficos():
+class graficos():
     st.title("Gráficos")
     st.write("Bem-vindo à página de gráficos. Aqui você encontrará representações visuais baseadas nos dados coletados.")
 
