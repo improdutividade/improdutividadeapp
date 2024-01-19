@@ -164,7 +164,7 @@ class AnaliseAtividades:
 
     def iniciar_analise(self):
         st.write("Iniciando análise...")
-        if not st.session_state.analise['informacoes_iniciais_obtidas']:
+        if not st.session_state.analise.get('informacoes_iniciais_obtidas', False):
             self.obter_informacoes_iniciais()
             st.session_state.analise['informacoes_iniciais_obtidas'] = True
 
