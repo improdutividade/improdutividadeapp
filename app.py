@@ -200,6 +200,15 @@ class AnaliseAtividades:
 
             st.success(f"Atividade '{atividade}' registrada com {quantidade} pessoa(s).")
 
+    def iniciar_analise(self):
+        print("Iniciando análise...")
+        print(f"Nome do usuário: {st.session_state.analise['nome_usuario']}")
+        print(f"Frente de serviço: {st.session_state.analise['frente_servico']}")
+        
+        # Adicione mais informações que achar relevantes para debugar
+        
+        self.obter_informacoes_iniciais()
+    
     def gerar_relatorio_excel(self):
         st.write(f"Dados salvos em '{self.arquivo_dados}'")
 
