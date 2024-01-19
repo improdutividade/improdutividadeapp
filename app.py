@@ -166,10 +166,13 @@ class AnaliseAtividades:
         st.write("Iniciando análise...")
         self.obter_informacoes_iniciais()
 
-    def obter_informacoes_iniciais(self):
-        st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome: ").upper()
-        st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
-        st.session_state.analise['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
+       def obter_informacoes_iniciais(self):
+        # Usar um ID específico para evitar DuplicateWidgetID
+        nome_usuario_id = f"nome_usuario_{self.user_id}"
+        st.session_state.registro['nome_usuario'] = st.text_input("Digite seu nome:", key=nome_usuario_id).upper()
+
+        frente_servico_id = f"frente_servico_{self.user_id}"
+        st.session_state.registro['frente_servico'] = st.text_input("Digite a frente de serviço:", key=frente_servico_id).upper()
 
     def selecionar_atividades(self):
         opcoes_atividades = [
