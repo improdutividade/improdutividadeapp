@@ -165,13 +165,13 @@ class AnaliseAtividades:
             }
 
     def obter_informacoes_iniciais(self):
-        if 'nome_usuario' not in st.session_state.analise:
+        if not st.session_state.analise['nome_usuario']:
             st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:").upper()
 
-        if 'frente_servico' not in st.session_state.analise:
+        if not st.session_state.analise['frente_servico']:
             st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço:").upper()
 
-        if 'quantidade_equipe' not in st.session_state.analise or st.session_state.analise['quantidade_equipe'] == 0:
+        if not st.session_state.analise['quantidade_equipe']:
             st.session_state.analise['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
 
     def selecionar_atividades(self):
@@ -198,16 +198,24 @@ class AnaliseAtividades:
 
     def registrar_atividades_quantidades(self, atividades_quantidades):
         for atividade, quantidade in atividades_quantidades.items():
-            novo_registro = {
-                'Nome_Usuario': st.session_state.analise['nome_usuario'],
-                'Frente_Servico': st.session_state.analise['frente_servico'],
-                'Atividade': atividade,
-                'Quantidade': quantidade
-            }
+            registro_existente = st.session_state.analise['df'][
+                (st.session_state.analise['df']['Nome_Usuario'] == st.session_state.analise['nome_usuario']) &
+                (st.session_state.analise['df']['Frente_Servico'] == st.session_state.analise['frente_servico']) &
+                (st.session_state.analise['df']['Atividade'] == atividade)
+            ]
 
-            df = st.session_state.analise['df']
-            df = pd.concat([df, pd.DataFrame([novo_registro])], ignore_index=True)
-            st.session_state.analise['df'] = df
+            if not registro_existente.empty:
+                # Se o registro já existir, atualiza a quantidade
+                st.session_state.analise['df'].loc[registro_existente.index, 'Quantidade'] = quantidade
+            else:
+                # Se o registro não existir, adiciona um novo
+                novo_registro = {
+                    'Nome_Usuario': st.session_state.analise['nome_usuario'],
+                    'Frente_Servico': st.session_state.analise['frente_servico'],
+                    'Atividade': atividade,
+                    'Quantidade': quantidade
+                }
+                st.session_state.analise['df'] = pd.concat([st.session_state.analise['df'], pd.DataFrame([novo_registro])], ignore_index=True)
 
     def gerar_relatorio_excel(self):
         df = st.session_state.analise['df']
