@@ -164,18 +164,18 @@ class AnaliseAtividades:
                 'df': pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Quantidade'])
             }
 
-def obter_informacoes_iniciais(self):
-    if not st.session_state.analise['nome_usuario']:
-        st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:").upper()
-
-    if not st.session_state.analise['frente_servico']:
-        st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço:").upper()
-
-    if not st.session_state.analise['quantidade_equipe']:
-        st.session_state.analise['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
-
-    st.sidebar.subheader("Divisão da Equipe")
-    analise.obter_informacoes_iniciais()
+    def obter_informacoes_iniciais(self):
+        if not st.session_state.analise['nome_usuario']:
+            st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:").upper()
+    
+        if not st.session_state.analise['frente_servico']:
+            st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço:").upper()
+    
+        if not st.session_state.analise['quantidade_equipe']:
+            st.session_state.analise['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
+    
+        st.sidebar.subheader("Divisão da Equipe")
+        analise.obter_informacoes_iniciais()
   
     def selecionar_atividades(self):
         opcoes_atividades = [
@@ -220,18 +220,18 @@ def obter_informacoes_iniciais(self):
                 }
                 st.session_state.analise['df'] = pd.concat([st.session_state.analise['df'], pd.DataFrame([novo_registro])], ignore_index=True)
 
-def gerar_relatorio_excel(self):
-    df = st.session_state.analise['df']
-
-    # Cria um link para download do arquivo Excel
-    output = io.BytesIO()
-    df.to_excel(output, index=False, engine='xlsxwriter', sheet_name='Sheet1')
-    output.seek(0)
-
-    # Gera um link de download
-    b64 = base64.b64encode(output.read()).decode()
-    href = f'<a href="data:application/octet-stream;base64,{b64}" download="analise_atividades_{self.user_id}.xlsx">Baixar Relatório Excel</a>'
-    st.markdown(href, unsafe_allow_html=True)
+    def gerar_relatorio_excel(self):
+        df = st.session_state.analise['df']
+    
+        # Cria um link para download do arquivo Excel
+        output = io.BytesIO()
+        df.to_excel(output, index=False, engine='xlsxwriter', sheet_name='Sheet1')
+        output.seek(0)
+    
+        # Gera um link de download
+        b64 = base64.b64encode(output.read()).decode()
+        href = f'<a href="data:application/octet-stream;base64,{b64}" download="analise_atividades_{self.user_id}.xlsx">Baixar Relatório Excel</a>'
+        st.markdown(href, unsafe_allow_html=True)
     
     def zerar_analise(self):
         st.session_state.analise = {
