@@ -185,7 +185,7 @@ class AnaliseAtividades:
         atividades_quantidades = {}
 
         for atividade in opcoes_atividades:
-            key = f"{atividade}_{self.user_id}_{i}"
+            key = f"{atividade}_{self.user_id}_Funcionario_{i}" 
             quantidade = st.number_input(
                 f"Quantidade de pessoas fazendo '{atividade}':",
                 min_value=0, max_value=st.session_state.analise['quantidade_equipe'], step=1, value=0,
