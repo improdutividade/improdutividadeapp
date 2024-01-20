@@ -165,17 +165,14 @@ class AnaliseAtividades:
             }
 
     def obter_informacoes_iniciais(self):
-        if not st.session_state.analise['nome_usuario']:
+        if 'nome_usuario' not in st.session_state.analise:
             st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:").upper()
     
-        if not st.session_state.analise['frente_servico']:
+        if 'frente_servico' not in st.session_state.analise:
             st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço:").upper()
     
-        if not st.session_state.analise['quantidade_equipe']:
+        if 'quantidade_equipe' not in st.session_state.analise or st.session_state.analise['quantidade_equipe'] == 0:
             st.session_state.analise['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
-    
-        st.sidebar.subheader("Divisão da Equipe")
-        analise.obter_informacoes_iniciais()
   
     def selecionar_atividades(self):
         opcoes_atividades = [
