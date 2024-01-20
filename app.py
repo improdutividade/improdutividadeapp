@@ -7,6 +7,7 @@ import base64
 from io import BytesIO
 import uuid
 import io
+import xlsxwriter
 
 class RegistroAtividades:
     def __init__(self, user_id):
@@ -164,16 +165,19 @@ class AnaliseAtividades:
                 'df': pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Quantidade'])
             }
 
-    def obter_informacoes_iniciais(self):
-        if not st.session_state.analise['nome_usuario']:
-            st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:").upper()
+def obter_informacoes_iniciais(self):
+    if not st.session_state.analise['nome_usuario']:
+        st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:").upper()
 
-        if not st.session_state.analise['frente_servico']:
-            st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço:").upper()
+    if not st.session_state.analise['frente_servico']:
+        st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço:").upper()
 
-        if not st.session_state.analise['quantidade_equipe']:
-            st.session_state.analise['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
+    if not st.session_state.analise['quantidade_equipe']:
+        st.session_state.analise['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
 
+    st.sidebar.subheader("Divisão da Equipe")
+    analise.obter_informacoes_iniciais()
+  
     def selecionar_atividades(self):
         opcoes_atividades = [
             "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
@@ -185,7 +189,7 @@ class AnaliseAtividades:
         atividades_quantidades = {}
 
         for atividade in opcoes_atividades:
-            key = f"{atividade}_{self.user_id}"
+            key = f"{atividade}_{self.user_id}_{i}"
             quantidade = st.number_input(
                 f"Quantidade de pessoas fazendo '{atividade}':",
                 min_value=0, max_value=st.session_state.analise['quantidade_equipe'], step=1, value=0,
