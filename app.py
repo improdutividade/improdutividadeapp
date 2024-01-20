@@ -174,28 +174,28 @@ class ConstruDataApp:
         if st.session_state.construdata['quantidade_equipe'] == 0:
             st.session_state.construdata['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
 
-    def selecionar_atividades(self):
-        opcoes_atividades = [
-            "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
-            "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
-            "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
-            "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"
-        ]
+    def selecionar_atividades(self, quantidade_equipe):
+    opcoes_atividades = [
+        "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
+        "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
+        "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
+        "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"
+    ]
 
-        atividades_quantidades = {}
+    atividades_quantidades = {}
 
-        for atividade in opcoes_atividades:
-            key = f"{atividade}_{self.user_id}_{st.session_state.construdata['quantidade_equipe']}"
-            quantidade = st.number_input(
-                f"Quantidade de pessoas fazendo '{atividade}':",
-                min_value=0, max_value=st.session_state.construdata['quantidade_equipe'], step=1,
-                key=key
-            )
-            if quantidade > 0:
-                atividades_quantidades[atividade] = quantidade
+    for atividade in opcoes_atividades:
+        key = f"{atividade}_{st.session_state.construdata['user_id']}_{quantidade_equipe}"
+        quantidade = st.number_input(
+            f"Quantidade de pessoas fazendo '{atividade}':",
+            min_value=0, max_value=quantidade_equipe, step=1, value=0,
+            key=key
+        )
+        if quantidade > 0:
+            atividades_quantidades[atividade] = quantidade
 
-        return atividades_quantidades
-
+    return atividades_quantidades
+    
     def registrar_atividades_quantidades(self, atividades_quantidades):
         for atividade, quantidade in atividades_quantidades.items():
             registro_existente = st.session_state.construdata['df'][
@@ -243,25 +243,25 @@ class ConstruDataApp:
         st.success("Análise zerada. Agora você pode iniciar uma nova análise.")
 
     def iniciar_analise(self):
-        self.obter_informacoes_iniciais()
-    
-        for i in range(1, st.session_state.construdata['quantidade_equipe'] + 1):
-            st.write(f"Divisão da Equipe {i}:")
-    
-            # Obter atividades para a equipe atual
-            atividades_quantidades = self.selecionar_atividades()
-    
-            # Registrar atividades no dataframe
-            self.registrar_atividades_quantidades(atividades_quantidades)
-    
-        st.write("Análise concluída para a equipe.")
-    
-        # Adiciona botões
-        if st.button("Baixar Relatório Excel"):
-            self.gerar_relatorio_excel()
-    
-        if st.button("Zerar Análise"):
-            self.zerar_analise()
+    self.obter_informacoes_iniciais()
+
+    for i in range(1, st.session_state.construdata['quantidade_equipe'] + 1):
+        st.write(f"Divisão da Equipe {i}:")
+
+        # Obter atividades para a equipe atual
+        atividades_quantidades = self.selecionar_atividades(st.session_state.construdata['quantidade_equipe'])
+
+        # Registrar atividades no dataframe
+        self.registrar_atividades_quantidades(atividades_quantidades)
+
+    st.write("Análise concluída para a equipe.")
+
+    # Adiciona botões
+    if st.button("Baixar Relatório Excel"):
+        self.gerar_relatorio_excel()
+
+    if st.button("Zerar Análise"):
+        self.zerar_analise()
 
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
