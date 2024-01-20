@@ -243,25 +243,25 @@ class ConstruDataApp:
         st.success("Análise zerada. Agora você pode iniciar uma nova análise.")
 
     def iniciar_analise(self):
-    self.obter_informacoes_iniciais()
+        self.obter_informacoes_iniciais()
 
-    for i in range(1, st.session_state.construdata['quantidade_equipe'] + 1):
-        st.write(f"Divisão da Equipe {i}:")
-
-        # Obter atividades para a equipe atual
-        atividades_quantidades = self.selecionar_atividades(st.session_state.construdata['quantidade_equipe'])
-
-        # Registrar atividades no dataframe
-        self.registrar_atividades_quantidades(atividades_quantidades)
-
-    st.write("Análise concluída para a equipe.")
-
-    # Adiciona botões
-    if st.button("Baixar Relatório Excel"):
-        self.gerar_relatorio_excel()
-
-    if st.button("Zerar Análise"):
-        self.zerar_analise()
+        for i in range(1, st.session_state.construdata['quantidade_equipe'] + 1):
+            st.write(f"Divisão da Equipe {i}:")
+    
+            # Obter atividades para a equipe atual
+            atividades_quantidades = self.selecionar_atividades(st.session_state.construdata['quantidade_equipe'])
+    
+            # Registrar atividades no dataframe
+            self.registrar_atividades_quantidades(atividades_quantidades)
+    
+        st.write("Análise concluída para a equipe.")
+    
+        # Adiciona botões
+        if st.button("Baixar Relatório Excel"):
+            self.gerar_relatorio_excel()
+    
+        if st.button("Zerar Análise"):
+            self.zerar_analise()
 
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
