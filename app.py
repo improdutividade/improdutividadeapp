@@ -257,7 +257,7 @@ class AnaliseAtividades:
 
         if st.button("Zerar Análise"):
             self.zerar_analise()
-
+            
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
 registro = RegistroAtividades(user_id)
