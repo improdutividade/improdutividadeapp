@@ -174,7 +174,7 @@ class AnaliseAtividades:
         if 'quantidade_equipe' not in st.session_state.analise or st.session_state.analise['quantidade_equipe'] == 0:
             st.session_state.analise['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
 
-    def selecionar_atividades(self, quantidade_equipe):
+    def selecionar_atividades(self):
         opcoes_atividades = [
             "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
             "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
@@ -185,10 +185,10 @@ class AnaliseAtividades:
         atividades_quantidades = {}
 
         for atividade in opcoes_atividades:
-            key = f"{atividade}_{self.user_id}_{quantidade_equipe}"
+            key = f"{atividade}_{self.user_id}_{st.session_state.analise['quantidade_equipe']}"
             quantidade = st.number_input(
                 f"Quantidade de pessoas fazendo '{atividade}':",
-                min_value=0, max_value=quantidade_equipe, step=1, value=0,
+                min_value=0, max_value=st.session_state.analise['quantidade_equipe'], step=1, value=0,
                 key=key
             )
             if quantidade > 0:
@@ -245,11 +245,11 @@ class AnaliseAtividades:
     def iniciar_analise(self):
         self.obter_informacoes_iniciais()
 
-        for i in range(1, self.quantidade_equipe + 1):
+        for i in range(1, st.session_state.analise['quantidade_equipe'] + 1):
             st.write(f"Divisão da Equipe {i}:")
 
             # Obter atividades para a equipe atual
-            atividades_quantidades = self.selecionar_atividades(self.quantidade_equipe)
+            atividades_quantidades = self.selecionar_atividades()
 
             # Registrar atividades no dataframe
             self.registrar_atividades_quantidades(atividades_quantidades)
@@ -265,7 +265,6 @@ class AnaliseAtividades:
 
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
-registro = RegistroAtividades(user_id)
 analise = AnaliseAtividades(user_id)
 
 def descricao_app1():
