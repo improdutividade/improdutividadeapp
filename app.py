@@ -142,7 +142,8 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
 user_id = str(uuid.uuid4())
 registro = RegistroAtividades(user_id)
 
-class AnaliseAtividades:
+
+class ConstruDataApp:
     def __init__(self, user_id):
         self.user_id = user_id
         self.arquivo_dados = f'analise_atividades_{self.user_id}.xlsx'
@@ -155,8 +156,8 @@ class AnaliseAtividades:
             df.to_excel(self.arquivo_dados, index=False)
 
     def iniciar_sessao(self):
-        if 'analise' not in st.session_state:
-            st.session_state.analise = {
+        if 'construdata' not in st.session_state:
+            st.session_state.construdata = {
                 'nome_usuario': '',
                 'frente_servico': '',
                 'quantidade_equipe': 0,
@@ -165,14 +166,15 @@ class AnaliseAtividades:
             }
 
     def obter_informacoes_iniciais(self):
-        if 'nome_usuario' not in st.session_state.analise:
-            st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome:").upper()
+        st.sidebar.subheader("Informações Iniciais")
+        if 'nome_usuario' not in st.session_state.construdata:
+            st.session_state.construdata['nome_usuario'] = st.sidebar.text_input("Digite seu nome:").upper()
 
-        if 'frente_servico' not in st.session_state.analise:
-            st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço:").upper()
+        if 'frente_servico' not in st.session_state.construdata:
+            st.session_state.construdata['frente_servico'] = st.sidebar.text_input("Digite a frente de serviço:").upper()
 
-        if 'quantidade_equipe' not in st.session_state.analise or st.session_state.analise['quantidade_equipe'] == 0:
-            st.session_state.analise['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
+        if 'quantidade_equipe' not in st.session_state.construdata or st.session_state.construdata['quantidade_equipe'] == 0:
+            st.session_state.construdata['quantidade_equipe'] = st.sidebar.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
 
     def selecionar_atividades(self):
         opcoes_atividades = [
@@ -185,10 +187,10 @@ class AnaliseAtividades:
         atividades_quantidades = {}
 
         for atividade in opcoes_atividades:
-            key = f"{atividade}_{self.user_id}_{st.session_state.analise['quantidade_equipe']}"
+            key = f"{atividade}_{self.user_id}_{st.session_state.construdata['quantidade_equipe']}"
             quantidade = st.number_input(
                 f"Quantidade de pessoas fazendo '{atividade}':",
-                min_value=0, max_value=st.session_state.analise['quantidade_equipe'], step=1, value=0,
+                min_value=0, max_value=st.session_state.construdata['quantidade_equipe'], step=1, value=0,
                 key=key
             )
             if quantidade > 0:
@@ -198,27 +200,27 @@ class AnaliseAtividades:
 
     def registrar_atividades_quantidades(self, atividades_quantidades):
         for atividade, quantidade in atividades_quantidades.items():
-            registro_existente = st.session_state.analise['df'][
-                (st.session_state.analise['df']['Nome_Usuario'] == st.session_state.analise['nome_usuario']) &
-                (st.session_state.analise['df']['Frente_Servico'] == st.session_state.analise['frente_servico']) &
-                (st.session_state.analise['df']['Atividade'] == atividade)
+            registro_existente = st.session_state.construdata['df'][
+                (st.session_state.construdata['df']['Nome_Usuario'] == st.session_state.construdata['nome_usuario']) &
+                (st.session_state.construdata['df']['Frente_Servico'] == st.session_state.construdata['frente_servico']) &
+                (st.session_state.construdata['df']['Atividade'] == atividade)
             ]
 
             if not registro_existente.empty:
                 # Se o registro já existir, atualiza a quantidade
-                st.session_state.analise['df'].loc[registro_existente.index, 'Quantidade'] = quantidade
+                st.session_state.construdata['df'].loc[registro_existente.index, 'Quantidade'] = quantidade
             else:
                 # Se o registro não existir, adiciona um novo
                 novo_registro = {
-                    'Nome_Usuario': st.session_state.analise['nome_usuario'],
-                    'Frente_Servico': st.session_state.analise['frente_servico'],
+                    'Nome_Usuario': st.session_state.construdata['nome_usuario'],
+                    'Frente_Servico': st.session_state.construdata['frente_servico'],
                     'Atividade': atividade,
                     'Quantidade': quantidade
                 }
-                st.session_state.analise['df'] = pd.concat([st.session_state.analise['df'], pd.DataFrame([novo_registro])], ignore_index=True)
+                st.session_state.construdata['df'] = pd.concat([st.session_state.construdata['df'], pd.DataFrame([novo_registro])], ignore_index=True)
 
     def gerar_relatorio_excel(self):
-        df = st.session_state.analise['df']
+        df = st.session_state.construdata['df']
 
         # Cria um link para download do arquivo Excel
         output = io.BytesIO()
@@ -233,7 +235,7 @@ class AnaliseAtividades:
         st.markdown(href, unsafe_allow_html=True)
 
     def zerar_analise(self):
-        st.session_state.analise = {
+        st.session_state.construdata = {
             'nome_usuario': '',
             'frente_servico': '',
             'quantidade_equipe': 0,
@@ -245,7 +247,7 @@ class AnaliseAtividades:
     def iniciar_analise(self):
         self.obter_informacoes_iniciais()
 
-        for i in range(1, st.session_state.analise['quantidade_equipe'] + 1):
+        for i in range(1, st.session_state.construdata['quantidade_equipe'] + 1):
             st.write(f"Divisão da Equipe {i}:")
 
             # Obter atividades para a equipe atual
@@ -265,7 +267,7 @@ class AnaliseAtividades:
 
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
-analise = AnaliseAtividades(user_id)
+construdata_app = ConstruDataApp(user_id)
 
 def descricao_app1():
     st.title("App 1 - Registro de Atividades (AtividadeTracker)")
