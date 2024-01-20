@@ -185,18 +185,16 @@ class ConstruDataApp:
         atividades_quantidades = {}
     
         for atividade in opcoes_atividades:
-            key = f"{atividade}_{st.session_state.construdata['user_id']}_{quantidade_equipe}"
             quantidade = st.number_input(
                 f"Quantidade de pessoas fazendo '{atividade}':",
-                min_value=0, max_value=quantidade_equipe, step=1, value=0,
-                key=key
+                min_value=0, max_value=quantidade_equipe, step=1, value=0
             )
             if quantidade > 0:
                 atividades_quantidades[atividade] = quantidade
     
         return atividades_quantidades
     
-    def registrar_atividades_quantidades(self, atividades_quantidades):
+    def registrar_atividades_quantidades(self, atividade, quantidade):
         for atividade, quantidade in atividades_quantidades.items():
             registro_existente = st.session_state.construdata['df'][
                 (st.session_state.construdata['df']['Nome_Usuario'] == st.session_state.construdata['nome_usuario']) &
@@ -244,7 +242,7 @@ class ConstruDataApp:
 
     def iniciar_analise(self):
         self.obter_informacoes_iniciais()
-
+    
         for i in range(1, st.session_state.construdata['quantidade_equipe'] + 1):
             st.write(f"Divisão da Equipe {i}:")
     
@@ -252,7 +250,8 @@ class ConstruDataApp:
             atividades_quantidades = self.selecionar_atividades(st.session_state.construdata['quantidade_equipe'])
     
             # Registrar atividades no dataframe
-            self.registrar_atividades_quantidades(atividades_quantidades)
+            for atividade, quantidade in atividades_quantidades.items():
+                self.registrar_atividades_quantidades(atividade, quantidade)
     
         st.write("Análise concluída para a equipe.")
     
