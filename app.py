@@ -142,7 +142,7 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
 user_id = str(uuid.uuid4())
 registro = RegistroAtividades(user_id)
 
-class ConstruDataApp:
+class AnaliseAtividades:
     def __init__(self, user_id):
         self.user_id = user_id
         self.arquivo_dados = f'analise_atividades_{self.user_id}.xlsx'
@@ -166,61 +166,49 @@ class ConstruDataApp:
 
     def obter_informacoes_iniciais(self):
         if not st.session_state.construdata['nome_usuario']:
-            st.session_state.construdata['nome_usuario'] = st.text_input("Digite seu nome:").upper()
+            st.session_state.construdata['nome_usuario'] = st.sidebar.text_input("Digite seu nome:").upper()
 
         if not st.session_state.construdata['frente_servico']:
-            st.session_state.construdata['frente_servico'] = st.text_input("Digite a frente de serviço:").upper()
+            st.session_state.construdata['frente_servico'] = st.sidebar.text_input("Digite a frente de serviço:").upper()
 
-        if st.session_state.construdata['quantidade_equipe'] == 0:
-            st.session_state.construdata['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
+        if st.sidebar.button("Definir Quantidade da Equipe"):
+            st.session_state.construdata['quantidade_equipe'] = st.sidebar.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
 
-    def selecionar_atividades(self, quantidade_equipe):
+    def selecionar_atividades(self):
         opcoes_atividades = [
             "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
             "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
             "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
             "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"
         ]
-    
+
         atividades_quantidades = {}
-    
+
         for atividade in opcoes_atividades:
             quantidade = st.number_input(
                 f"Quantidade de pessoas fazendo '{atividade}':",
-                min_value=0, max_value=quantidade_equipe, step=1, value=0
+                min_value=0, max_value=st.session_state.construdata['quantidade_equipe'], step=1, value=0
             )
             if quantidade > 0:
                 atividades_quantidades[atividade] = quantidade
-    
-        return atividades_quantidades
-    
-    def registrar_atividades_quantidades(self, atividade, quantidade):
-        for atividade, quantidade in atividades_quantidades.items():
-            registro_existente = st.session_state.construdata['df'][
-                (st.session_state.construdata['df']['Nome_Usuario'] == st.session_state.construdata['nome_usuario']) &
-                (st.session_state.construdata['df']['Frente_Servico'] == st.session_state.construdata['frente_servico']) &
-                (st.session_state.construdata['df']['Atividade'] == atividade)
-            ]
 
-            if not registro_existente.empty:
-                # Se o registro já existir, atualiza a quantidade
-                st.session_state.construdata['df'].loc[registro_existente.index, 'Quantidade'] = quantidade
-            else:
-                # Se o registro não existir, adiciona um novo
-                novo_registro = {
-                    'Nome_Usuario': st.session_state.construdata['nome_usuario'],
-                    'Frente_Servico': st.session_state.construdata['frente_servico'],
-                    'Atividade': atividade,
-                    'Quantidade': quantidade
-                }
-                st.session_state.construdata['df'] = pd.concat([st.session_state.construdata['df'], pd.DataFrame([novo_registro])], ignore_index=True)
+        return atividades_quantidades
+
+    def registrar_atividades_quantidades(self, atividade, quantidade):
+        novo_registro = {
+            'Nome_Usuario': st.session_state.construdata['nome_usuario'],
+            'Frente_Servico': st.session_state.construdata['frente_servico'],
+            'Atividade': atividade,
+            'Quantidade': quantidade
+        }
+        st.session_state.construdata['df'] = pd.concat([st.session_state.construdata['df'], pd.DataFrame([novo_registro])], ignore_index=True)
 
     def gerar_relatorio_excel(self):
         df = st.session_state.construdata['df']
 
         # Cria um link para download do arquivo Excel
         output = io.BytesIO()
-        writer = pd.ExcelWriter(output, engine='openpyxl')
+        writer = pd.ExcelWriter(output, engine='openpyxl')  # Use 'openpyxl' como engine
         df.to_excel(writer, index=False, sheet_name='Sheet1')
         writer.save()
         output.seek(0)
@@ -242,30 +230,30 @@ class ConstruDataApp:
 
     def iniciar_analise(self):
         self.obter_informacoes_iniciais()
-    
+
         for i in range(1, st.session_state.construdata['quantidade_equipe'] + 1):
             st.write(f"Divisão da Equipe {i}:")
-    
+
             # Obter atividades para a equipe atual
-            atividades_quantidades = self.selecionar_atividades(st.session_state.construdata['quantidade_equipe'])
-    
+            atividades_quantidades = self.selecionar_atividades()
+
             # Registrar atividades no dataframe
             for atividade, quantidade in atividades_quantidades.items():
                 self.registrar_atividades_quantidades(atividade, quantidade)
-    
+
         st.write("Análise concluída para a equipe.")
-    
+
         # Adiciona botões
         if st.button("Baixar Relatório Excel"):
             self.gerar_relatorio_excel()
-    
+
         if st.button("Zerar Análise"):
             self.zerar_analise()
 
 # Adicionado um identificador único para cada usuário usando o UUID
-user_id = str(uuid.uuid4())
-construdata_app = ConstruDataApp(user_id)
-
+user_id = "test_user_id"  # Substitua isso por sua lógica para gerar user_id
+analise = AnaliseAtividades(user_id)
+analise.iniciar_analise()
 
 def descricao_app1():
     st.title("App 1 - Registro de Atividades (AtividadeTracker)")
