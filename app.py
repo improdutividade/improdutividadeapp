@@ -175,24 +175,24 @@ class AnaliseAtividades:
             st.session_state.analise['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
   
     def selecionar_atividades(self):
-    opcoes_atividades = [
-        "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
-        "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
-        "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
-        "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"
-    ]
-
-    atividades_quantidades = {}
-
-    for atividade in opcoes_atividades:
-        quantidade = st.number_input(
-            f"Quantidade de pessoas fazendo '{atividade}':",
-            min_value=0, max_value=self.quantidade_equipe, step=1, value=0
-        )
-        if quantidade > 0:
-            atividades_quantidades[atividade] = quantidade
-
-    return atividades_quantidades
+        opcoes_atividades = [
+            "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
+            "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
+            "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
+            "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"
+        ]
+    
+        atividades_quantidades = {}
+    
+        for atividade in opcoes_atividades:
+            quantidade = st.number_input(
+                f"Quantidade de pessoas fazendo '{atividade}':",
+                min_value=0, max_value=self.quantidade_equipe, step=1, value=0
+            )
+            if quantidade > 0:
+                atividades_quantidades[atividade] = quantidade
+    
+        return atividades_quantidades
     
     def registrar_atividades_quantidades(self, atividades_quantidades):
         for atividade, quantidade in atividades_quantidades.items():
