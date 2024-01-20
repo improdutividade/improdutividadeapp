@@ -180,7 +180,7 @@ class AnaliseAtividades:
             "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
             "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
             "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"
-        ]
+            ]
     
         atividades_quantidades = {}
     
