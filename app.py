@@ -225,7 +225,9 @@ class AnaliseAtividades:
     
         # Cria um link para download do arquivo Excel
         output = io.BytesIO()
-        df.to_excel(output, index=False, engine='xlsxwriter', sheet_name='Sheet1')
+        writer = pd.ExcelWriter(output, engine='xlsxwriter')
+        df.to_excel(writer, index=False, sheet_name='Sheet1')
+        writer.save()
         output.seek(0)
     
         # Gera um link de download
