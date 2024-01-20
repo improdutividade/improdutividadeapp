@@ -222,7 +222,7 @@ class ConstruDataApp:
 
         # Cria um link para download do arquivo Excel
         output = io.BytesIO()
-        writer = pd.ExcelWriter(output, engine='xlsxwriter')
+        writer = pd.ExcelWriter(output, engine='openpyxl')
         df.to_excel(writer, index=False, sheet_name='Sheet1')
         writer.save()
         output.seek(0)
@@ -244,22 +244,22 @@ class ConstruDataApp:
 
     def iniciar_analise(self):
         self.obter_informacoes_iniciais()
-
+    
         for i in range(1, st.session_state.construdata['quantidade_equipe'] + 1):
             st.write(f"Divisão da Equipe {i}:")
-
+    
             # Obter atividades para a equipe atual
             atividades_quantidades = self.selecionar_atividades()
-
+    
             # Registrar atividades no dataframe
             self.registrar_atividades_quantidades(atividades_quantidades)
-
+    
         st.write("Análise concluída para a equipe.")
-
+    
         # Adiciona botões
         if st.button("Baixar Relatório Excel"):
             self.gerar_relatorio_excel()
-
+    
         if st.button("Zerar Análise"):
             self.zerar_analise()
 
