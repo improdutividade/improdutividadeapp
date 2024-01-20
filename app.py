@@ -165,13 +165,13 @@ class ConstruDataApp:
             }
 
     def obter_informacoes_iniciais(self):
-        if 'nome_usuario' not in st.session_state.construdata:
+        if not st.session_state.construdata['nome_usuario']:
             st.session_state.construdata['nome_usuario'] = st.text_input("Digite seu nome:").upper()
 
-        if 'frente_servico' not in st.session_state.construdata:
+        if not st.session_state.construdata['frente_servico']:
             st.session_state.construdata['frente_servico'] = st.text_input("Digite a frente de serviço:").upper()
 
-        if 'quantidade_equipe' not in st.session_state.construdata or st.session_state.construdata['quantidade_equipe'] == 0:
+        if st.session_state.construdata['quantidade_equipe'] == 0:
             st.session_state.construdata['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
 
     def selecionar_atividades(self):
@@ -266,6 +266,7 @@ class ConstruDataApp:
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
 construdata_app = ConstruDataApp(user_id)
+
 
 def descricao_app1():
     st.title("App 1 - Registro de Atividades (AtividadeTracker)")
