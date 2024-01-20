@@ -142,7 +142,6 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
 user_id = str(uuid.uuid4())
 registro = RegistroAtividades(user_id)
 
-
 class ConstruDataApp:
     def __init__(self, user_id):
         self.user_id = user_id
@@ -224,7 +223,7 @@ class ConstruDataApp:
 
         # Cria um link para download do arquivo Excel
         output = io.BytesIO()
-        writer = pd.ExcelWriter(output, engine='xlsxwriter')
+        writer = pd.ExcelWriter(output, engine='openpyxl')
         df.to_excel(writer, index=False, sheet_name='Sheet1')
         writer.save()
         output.seek(0)
