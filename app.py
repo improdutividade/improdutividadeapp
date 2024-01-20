@@ -165,15 +165,14 @@ class ConstruDataApp:
             }
 
     def obter_informacoes_iniciais(self):
-        st.sidebar.subheader("Informações Iniciais")
         if 'nome_usuario' not in st.session_state.construdata:
-            st.session_state.construdata['nome_usuario'] = st.sidebar.text_input("Digite seu nome:").upper()
+            st.session_state.construdata['nome_usuario'] = st.text_input("Digite seu nome:").upper()
 
         if 'frente_servico' not in st.session_state.construdata:
-            st.session_state.construdata['frente_servico'] = st.sidebar.text_input("Digite a frente de serviço:").upper()
+            st.session_state.construdata['frente_servico'] = st.text_input("Digite a frente de serviço:").upper()
 
         if 'quantidade_equipe' not in st.session_state.construdata or st.session_state.construdata['quantidade_equipe'] == 0:
-            st.session_state.construdata['quantidade_equipe'] = st.sidebar.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
+            st.session_state.construdata['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
 
     def selecionar_atividades(self):
         opcoes_atividades = [
