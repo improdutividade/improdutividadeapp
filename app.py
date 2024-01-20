@@ -322,7 +322,7 @@ def main():
 
     elif app_choice == "App 2 - ConstruData Insights":
         # Implementando a lógica do App 2
-        analise.iniciar_analise()
+        construdata_app.iniciar_analise()
 
     elif app_choice == "Informações":
         informacoes()  # Adicione a lógica do App de Informações aqui
