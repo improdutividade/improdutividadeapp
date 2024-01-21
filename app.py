@@ -205,6 +205,7 @@ def main():
         analise_atividades.distribuir_equipe_atividades()
         analise_atividades.registrar_atividades_quantidades()
         analise_atividades.gerar_relatorio_excel()
+        analise_atividades.zerar_dados()
 
     elif app_choice == "Informações":
         informacoes()
@@ -216,4 +217,5 @@ if __name__ == "__main__":
     user_id = str(uuid.uuid4())
     registro = RegistroAtividades(user_id)
     analise_atividades = AnaliseAtividades(user_id)
+    analise_atividades = AnaliseAtividades(user_id=1)
     main()
