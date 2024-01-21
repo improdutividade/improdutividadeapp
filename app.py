@@ -35,29 +35,29 @@ class RegistroAtividades:
         if not st.session_state.registro_atividades['frente_servico']:
             st.session_state.registro_atividades['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
 
-        # Adicionada verificação para garantir que as informações iniciais sejam solicitadas apenas uma vez
-        if 'informacoes_iniciais_solicitadas' not in st.session_state.registro_atividades:
-            quantidade_equipe = st.number_input("Digite a quantidade de membros da equipe: ", min_value=1, step=1, value=1)
+    def registrar_atividades(self):
+        self.obter_informacoes_iniciais()
 
-            for i in range(1, quantidade_equipe + 1):
-                self.registrar_atividade(i)
+        quantidade_equipe = st.number_input("Digite a quantidade de membros da equipe: ", min_value=1, step=1, value=1)
 
-            # Adiciona botão para download do Excel preenchido
-            if st.button("Baixar Relatório Excel"):
-                self.gerar_relatorio_excel()
+        for i in range(1, quantidade_equipe + 1):
+            self.registrar_atividade(i)
 
-            # Adiciona botão para reiniciar os dados
-            if st.button("Zerar Dados"):
-                self.zerar_dados()
+        # Adiciona botão para download do Excel preenchido
+        if st.button("Baixar Relatório Excel"):
+            self.gerar_relatorio_excel()
 
-            st.session_state.registro_atividades['informacoes_iniciais_solicitadas'] = True  # Marcamos que as informações iniciais foram solicitadas
+        # Adiciona botão para reiniciar os dados
+        if st.button("Zerar Dados"):
+            self.zerar_dados()
 
     def selecionar_atividade(self, funcionario_id):
         opcoes_atividades = [
-           "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
-           "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
-           "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
-           "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"]
+            "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
+            "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
+            "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
+            "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"
+        ]
 
         atividade = st.selectbox(f"Selecione a atividade para funcionário {funcionario_id}:", opcoes_atividades, key=f"atividade_{funcionario_id}")
         return atividade
@@ -133,6 +133,7 @@ class RegistroAtividades:
         st.write("Zerando dados...")
         st.session_state.registro_atividades['df'] = pd.DataFrame(columns=['ID', 'Nome_Usuário', 'Frente_Serviço', 'Função', 'Atividade', 'Data', 'Início', 'Fim', 'Duração'])
         st.success("Dados zerados. Você pode iniciar novos registros.")
+
 
 class AnaliseAtividades:
     def __init__(self, user_id):
