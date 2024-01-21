@@ -192,6 +192,8 @@ def graficos():
     st.title("Gráficos")
     st.write("Bem-vindo à página de gráficos. Aqui você encontrará representações visuais baseadas nos dados coletados.")
 
+analise_atividades = AnaliseAtividades(user_id=1)
+
 # Função principal
 def main():
     st.sidebar.title("Menu de Navegação")
@@ -215,7 +217,5 @@ def main():
 
 if __name__ == "__main__":
     user_id = str(uuid.uuid4())
-    registro = RegistroAtividades(user_id)
-    analise_atividades = AnaliseAtividades(user_id)
-    analise_atividades = AnaliseAtividades(user_id=1)
+    analise_atividades = AnaliseAtividades(user_id)  # Mova esta linha para cá
     main()
