@@ -148,6 +148,7 @@ class AnaliseAtividades:
         self.arquivo_dados = f'analise_atividades_{self.user_id}.xlsx'
         self.iniciar_arquivo_excel()
         self.iniciar_sessao()
+        self.obter_informacoes_iniciais()
 
     def iniciar_arquivo_excel(self):
         if not os.path.exists(self.arquivo_dados):
@@ -157,7 +158,9 @@ class AnaliseAtividades:
     def iniciar_sessao(self):
         if 'analise' not in st.session_state:
             st.session_state.analise = {
-                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade', 'Nome_Usuário', 'Frente_Serviço'])
+                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade', 'Nome_Usuário', 'Frente_Serviço']),
+                'nome_usuario': '',
+                'frente_servico': ''
             }
 
     def obter_informacoes_iniciais(self):
@@ -165,7 +168,7 @@ class AnaliseAtividades:
         st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
 
     def iniciar_analise(self):
-        self.obter_informacoes_iniciais()
+        st.write("Iniciando análise...")
 
     def selecionar_atividades(self):
         opcoes_atividades = [
