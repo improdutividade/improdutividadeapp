@@ -170,14 +170,13 @@ class AnaliseAtividades:
 
     def iniciar_analise(self):
         st.write("Iniciando análise...")
-
+    
         try:
             atividades_quantidades = self.selecionar_atividades()
             self.registrar_atividades_quantidades(atividades_quantidades)
             self.gerar_relatorio_excel()
         except Exception as e:
-            st.error(f"Erro durante a análise: {str(e)}")
-            traceback.print_exc()
+            st.exception(e)
 
     def selecionar_atividades(self):
         opcoes_atividades = [
