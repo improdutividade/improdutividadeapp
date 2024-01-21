@@ -14,13 +14,13 @@ class AnaliseAtividades:
 
     def iniciar_arquivo_excel(self):
         if not os.path.exists(self.arquivo_dados):
-            df = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
+            df = pd.DataFrame(columns=['Nome_Usuário', 'Frente_Serviço', 'Atividade', 'Início', 'Fim', 'Quantidade'])
             df.to_excel(self.arquivo_dados, index=False)
 
     def iniciar_sessao(self):
         if 'analise' not in st.session_state:
             st.session_state.analise = {
-                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade']),
+                'df': pd.DataFrame(columns=['Nome_Usuário', 'Frente_Serviço', 'Atividade', 'Início', 'Fim', 'Quantidade']),
                 'nome_usuario': '',
                 'frente_servico': '',
                 'equipe_quantidade': 0,
@@ -34,40 +34,44 @@ class AnaliseAtividades:
 
     def distribuir_equipe_atividades(self):
         self.iniciar_sessao()
-    
+
         opcoes_atividades = [
             "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
             "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
             "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
             "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"
         ]
-    
+
         # Certifique-se de inicializar a chave 'equipe_distribuicao' no estado da sessão
         if 'equipe_distribuicao' not in st.session_state.analise:
             st.session_state.analise['equipe_distribuicao'] = {}
-    
+
         st.write("Distribua a quantidade de membros da equipe entre as atividades:")
         for atividade in opcoes_atividades:
             quantidade_input = st.text_input(f"Quantidade para '{atividade}':")
             quantidade = int(quantidade_input) if quantidade_input.strip() else 0
-    
+
             st.session_state.analise['equipe_distribuicao'][atividade] = quantidade
-    
+
     def registrar_atividades_quantidades(self):
         df = st.session_state.analise['df']
 
-        for atividade, quantidade in st.session_state.analise['equipe_distribuicao'].items():
-            novo_registro = {
-                'Atividade': atividade,
-                'Início': datetime.datetime.now().strftime("%H:%M:%S"),
-                'Fim': '',
-                'Quantidade': quantidade
-            }
+        # Verifica se há alguma atualização nas atividades
+        if any(st.session_state.analise['equipe_distribuicao'].values()):
+            for atividade, quantidade in st.session_state.analise['equipe_distribuicao'].items():
+                novo_registro = {
+                    'Nome_Usuário': st.session_state.analise['nome_usuario'],
+                    'Frente_Serviço': st.session_state.analise['frente_servico'],
+                    'Atividade': atividade,
+                    'Início': datetime.datetime.now().strftime("%H:%M:%S"),
+                    'Fim': '',
+                    'Quantidade': quantidade
+                }
 
-            df = pd.concat([df, pd.DataFrame([novo_registro])], ignore_index=True)
-            st.session_state.analise['df'] = df
+                df = pd.concat([df, pd.DataFrame([novo_registro])], ignore_index=True)
+                st.session_state.analise['df'] = df
 
-            st.success(f"Atividade '{atividade}' registrada com {quantidade} pessoa(s).")
+                st.success(f"Atividade '{atividade}' registrada com {quantidade} pessoa(s).")
 
     def gerar_relatorio_excel(self):
         st.write(f"Dados salvos em '{self.arquivo_dados}'")
