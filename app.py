@@ -140,7 +140,6 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
 
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
-registro = RegistroAtividades(user_id)
 
 class AnaliseAtividades:
     def __init__(self, user_id):
