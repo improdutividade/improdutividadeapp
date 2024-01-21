@@ -28,9 +28,13 @@ class RegistroAtividades:
                 'df': pd.DataFrame(columns=['ID', 'Nome_Usuário', 'Frente_Serviço', 'Função', 'Atividade', 'Data', 'Início', 'Fim', 'Duração'])
             }
 
+
     def obter_informacoes_iniciais(self):
-        st.session_state.registro['nome_usuario'] = st.text_input("Digite seu nome: ").upper()
-        st.session_state.registro['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
+        if not st.session_state.registro['nome_usuario']:
+            st.session_state.registro['nome_usuario'] = st.text_input("Digite seu nome: ").upper()
+
+        if not st.session_state.registro['frente_servico']:
+            st.session_state.registro['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
 
     def registrar_atividades(self):
         self.obter_informacoes_iniciais()
