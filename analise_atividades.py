@@ -34,21 +34,25 @@ class AnaliseAtividades:
 
     def distribuir_equipe_atividades(self):
         self.iniciar_sessao()
-
+    
         opcoes_atividades = [
             "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
             "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
             "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
             "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"
         ]
-
+    
+        # Certifique-se de inicializar a chave 'equipe_distribuicao' no estado da sessão
+        if 'equipe_distribuicao' not in st.session_state.analise:
+            st.session_state.analise['equipe_distribuicao'] = {}
+    
         st.write("Distribua a quantidade de membros da equipe entre as atividades:")
         for atividade in opcoes_atividades:
             quantidade_input = st.text_input(f"Quantidade para '{atividade}':")
             quantidade = int(quantidade_input) if quantidade_input.strip() else 0
-
+    
             st.session_state.analise['equipe_distribuicao'][atividade] = quantidade
-
+    
     def registrar_atividades_quantidades(self):
         df = st.session_state.analise['df']
 
