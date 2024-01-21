@@ -156,7 +156,9 @@ class AnaliseAtividades:
     def iniciar_sessao(self):
         if 'analise' not in st.session_state:
             st.session_state.analise = {
-                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
+                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade']),
+                'nome_usuario': '',
+                'frente_servico': ''
             }
 
     def obter_informacoes_iniciais(self):
@@ -174,8 +176,8 @@ class AnaliseAtividades:
         atividades_quantidades = {}
 
         for i in range(quantidade_equipe):
-            atividade = st.selectbox(f"Selecione a atividade para o funcionário {i + 1}:", opcoes_atividades)
-            quantidade = st.number_input(f"Quantidade de pessoas fazendo '{atividade}':", min_value=0, step=1, value=0)
+            atividade = st.selectbox(f"Selecione a atividade para o funcionário {i + 1}:", opcoes_atividades, key=f"atividade_{i}")
+            quantidade = st.number_input(f"Quantidade de pessoas fazendo '{atividade}':", min_value=0, step=1, value=0, key=f"quantidade_{i}")
             if quantidade > 0:
                 atividades_quantidades[atividade] = quantidade
 
@@ -224,7 +226,6 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
 analise = AnaliseAtividades(user_id)
-
 
 def descricao_app1():
     st.title("App 1 - Registro de Atividades (AtividadeTracker)")
