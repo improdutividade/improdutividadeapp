@@ -44,11 +44,8 @@ class AnaliseAtividades:
 
         st.write("Distribua a quantidade de membros da equipe entre as atividades:")
         for atividade in opcoes_atividades:
-            quantidade = st.text_input(f"Quantidade para '{atividade}':")
-            if quantidade != '':
-                quantidade = int(quantidade)
-            else:
-                quantidade = 0
+            quantidade_input = st.text_input(f"Quantidade para '{atividade}':")
+            quantidade = int(quantidade_input) if quantidade_input.strip() else 0
 
             st.session_state.analise['equipe_distribuicao'][atividade] = quantidade
 
@@ -78,3 +75,11 @@ class AnaliseAtividades:
             st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
         else:
             st.warning("Nenhum dado disponível para exportação.")
+
+# Função auxiliar para criar botão de download
+def get_binary_file_downloader_html(bin_file, file_label='File'):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    bin_str = base64.b64encode(data).decode()
+    href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">{file_label}</a>'
+    return href
