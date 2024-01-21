@@ -185,14 +185,17 @@ class AnaliseAtividades:
             "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
             "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"
         ]
-
+    
         atividades_quantidades = {}
-
-        for atividade in opcoes_atividades:
-            quantidade = st.number_input(f"Quantidade de pessoas fazendo '{atividade}':", min_value=0, step=1, value=0)
-            if quantidade > 0:
-                atividades_quantidades[atividade] = quantidade
-
+    
+        try:
+            for atividade in opcoes_atividades:
+                quantidade = st.number_input(f"Quantidade de pessoas fazendo '{atividade}':", min_value=0, step=1, value=0)
+                if quantidade > 0:
+                    atividades_quantidades[atividade] = quantidade
+        except Exception as e:
+            st.error(f"Erro ao selecionar atividades: {str(e)}")
+    
         return atividades_quantidades
 
     def registrar_atividades_quantidades(self, atividades_quantidades):
