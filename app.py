@@ -35,21 +35,22 @@ class RegistroAtividades:
         if not st.session_state.registro_atividades['frente_servico']:
             st.session_state.registro_atividades['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
 
-    def registrar_atividades(self):
-        self.obter_informacoes_iniciais()
+        # Adicionada verificação para garantir que as informações iniciais sejam solicitadas apenas uma vez
+        if 'informacoes_iniciais_solicitadas' not in st.session_state.registro_atividades:
+            quantidade_equipe = st.number_input("Digite a quantidade de membros da equipe: ", min_value=1, step=1, value=1)
 
-        quantidade_equipe = st.number_input("Digite a quantidade de membros da equipe: ", min_value=1, step=1, value=1)
+            for i in range(1, quantidade_equipe + 1):
+                self.registrar_atividade(i)
 
-        for i in range(1, quantidade_equipe + 1):
-            self.registrar_atividade(i)
+            # Adiciona botão para download do Excel preenchido
+            if st.button("Baixar Relatório Excel"):
+                self.gerar_relatorio_excel()
 
-        # Adiciona botão para download do Excel preenchido
-        if st.button("Baixar Relatório Excel"):
-            self.gerar_relatorio_excel()
+            # Adiciona botão para reiniciar os dados
+            if st.button("Zerar Dados"):
+                self.zerar_dados()
 
-        # Adiciona botão para reiniciar os dados
-        if st.button("Zerar Dados"):
-            self.zerar_dados()
+            st.session_state.registro_atividades['informacoes_iniciais_solicitadas'] = True  # Marcamos que as informações iniciais foram solicitadas
 
     def selecionar_atividade(self, funcionario_id):
         opcoes_atividades = [
