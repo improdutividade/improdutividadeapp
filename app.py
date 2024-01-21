@@ -7,6 +7,14 @@ import base64
 from io import BytesIO
 import uuid
 
+st.set_page_config(
+    page_tittle="Exxata Produtividade",
+    page_icon="🌸",
+    layout='centered'
+    initial_sidebar_state='expanded'
+)
+    
+
 class RegistroAtividades:
     def __init__(self, user_id):
         self.user_id = user_id
