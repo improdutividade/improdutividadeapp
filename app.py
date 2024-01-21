@@ -29,11 +29,11 @@ class RegistroAtividades:
             }
 
     def obter_informacoes_iniciais(self):
-        if not st.session_state.registro['nome_usuario']:
-            st.session_state.registro['nome_usuario'] = st.text_input("Digite seu nome: ").upper()
+        if not st.session_state.registro_atividades['nome_usuario']:
+            st.session_state.registro_atividades['nome_usuario'] = st.text_input("Digite seu nome: ").upper()
 
-        if not st.session_state.registro['frente_servico']:
-            st.session_state.registro['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
+        if not st.session_state.registro_atividades['frente_servico']:
+            st.session_state.registro_atividades['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
 
     def registrar_atividades(self):
         self.obter_informacoes_iniciais()
@@ -78,8 +78,8 @@ class RegistroAtividades:
     def iniciar_atividade(self, funcionario_id, nome_funcao, atividade):
         novo_registro = {
             'ID': funcionario_id,
-            'Nome_Usuário': st.session_state.registro['nome_usuario'],
-            'Frente_Serviço': st.session_state.registro['frente_servico'],
+            'Nome_Usuário': st.session_state.registro_atividades['nome_usuario'],
+            'Frente_Serviço': st.session_state.registro_atividades['frente_servico'],
             'Função': nome_funcao,
             'Atividade': atividade,
             'Data': datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-3))).strftime("%Y-%m-%d"),
@@ -88,16 +88,16 @@ class RegistroAtividades:
             'Duração': ''
         }
 
-        df = st.session_state.registro['df']
+        df = st.session_state.registro_atividades['df']
         df = pd.concat([df, pd.DataFrame([novo_registro])], ignore_index=True)
-        st.session_state.registro['df'] = df
+        st.session_state.registro_atividades['df'] = df
 
         st.success(f"Atividade '{atividade}' iniciada para funcionário {funcionario_id} ({nome_funcao})")
 
     def encerrar_atividade(self, funcionario_id):
         st.write(f"Encerrando atividade para funcionário {funcionario_id}...")
 
-        df = st.session_state.registro['df']
+        df = st.session_state.registro_atividades['df']
 
         funcionario_df = df[df['ID'] == funcionario_id]
 
@@ -111,7 +111,7 @@ class RegistroAtividades:
             fim = datetime.datetime.now()
             duracao = fim - pd.to_datetime(inicio)
             df.loc[(df['ID'] == funcionario_id) & (df.index == len(funcionario_df) - 1), 'Duração'] = duracao
-            st.session_state.registro['df'] = df
+            st.session_state.registro_atividades['df'] = df
             st.success(f"Atividade encerrada para funcionário {funcionario_id} às {fim.strftime('%H:%M:%S')}")
 
         else:
@@ -120,7 +120,7 @@ class RegistroAtividades:
     def gerar_relatorio_excel(self):
         st.write(f"Dados salvos em '{self.arquivo_dados}'")
 
-        df = st.session_state.registro['df']
+        df = st.session_state.registro_atividades['df']
 
         if not df.empty:
             df.to_excel(self.arquivo_dados, index=False)
@@ -130,16 +130,8 @@ class RegistroAtividades:
 
     def zerar_dados(self):
         st.write("Zerando dados...")
-        st.session_state.registro['df'] = pd.DataFrame(columns=['ID', 'Nome_Usuário', 'Frente_Serviço', 'Função', 'Atividade', 'Data', 'Início', 'Fim', 'Duração'])
+        st.session_state.registro_atividades['df'] = pd.DataFrame(columns=['ID', 'Nome_Usuário', 'Frente_Serviço', 'Função', 'Atividade', 'Data', 'Início', 'Fim', 'Duração'])
         st.success("Dados zerados. Você pode iniciar novos registros.")
-
-# Função auxiliar para criar botão de download
-def get_binary_file_downloader_html(bin_file, file_label='File'):
-    with open(bin_file, 'rb') as f:
-        data = f.read()
-    bin_str = base64.b64encode(data).decode()
-    href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">{file_label}</a>'
-    return href
 
 class AnaliseAtividades:
     def __init__(self, user_id):
