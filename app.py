@@ -7,6 +7,7 @@ import base64
 from io import BytesIO
 import uuid
 import io
+import traceback
 
 class RegistroAtividades:
     def __init__(self, user_id):
@@ -168,13 +169,15 @@ class AnaliseAtividades:
         st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
 
     def iniciar_analise(self):
+        st.write("Iniciando análise...")
+
         try:
-            st.write("Iniciando análise...")
             atividades_quantidades = self.selecionar_atividades()
             self.registrar_atividades_quantidades(atividades_quantidades)
             self.gerar_relatorio_excel()
         except Exception as e:
             st.error(f"Erro durante a análise: {str(e)}")
+            traceback.print_exc()
 
     def selecionar_atividades(self):
         opcoes_atividades = [
