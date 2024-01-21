@@ -10,13 +10,7 @@ class AnaliseAtividades:
     def __init__(self, user_id):
         self.user_id = user_id
         self.arquivo_dados = f'analise_atividades_{self.user_id}.xlsx'
-        self.iniciar_arquivo_excel()
         self.iniciar_sessao()
-
-    def iniciar_arquivo_excel(self):
-        if not os.path.exists(self.arquivo_dados):
-            df = pd.DataFrame(columns=['Nome_Usuário', 'Frente_Serviço', 'Atividade', 'Início', 'Fim', 'Quantidade'])
-            df.to_excel(self.arquivo_dados, index=False)
 
     def iniciar_sessao(self):
         if 'analise' not in st.session_state:
@@ -55,6 +49,10 @@ class AnaliseAtividades:
             st.session_state.analise['equipe_distribuicao'][atividade] = quantidade
 
     def registrar_atividades_quantidades(self):
+        # Inicializa o DataFrame df se não existir no estado da sessão
+        if 'df' not in st.session_state.analise:
+            st.session_state.analise['df'] = pd.DataFrame(columns=['Nome_Usuário', 'Frente_Serviço', 'Atividade', 'Início', 'Fim', 'Quantidade'])
+
         df = st.session_state.analise['df']
 
         # Verifica se há alguma atualização nas atividades
@@ -104,26 +102,3 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
     bin_str = base64.b64encode(data).decode()
     href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">{file_label}</a>'
     return href
-
-# Cria uma instância de AnaliseAtividades
-analise_atividades = AnaliseAtividades(user_id=1)
-
-# Seção principal do Streamlit
-def main():
-    st.title("Análise de Atividades")
-    analise_atividades.obter_informacoes_iniciais()
-
-    if st.button("Distribuir Equipe entre Atividades"):
-        analise_atividades.distribuir_equipe_atividades()
-
-    if st.button("Registrar Atividades e Quantidades"):
-        analise_atividades.registrar_atividades_quantidades()
-
-    if st.button("Gerar Relatório Excel"):
-        analise_atividades.gerar_relatorio_excel()
-
-    if st.button("Zerar Dados"):
-        analise_atividades.zerar_dados()
-
-if __name__ == "__main__":
-    main()
