@@ -192,8 +192,6 @@ def graficos():
     st.title("Gráficos")
     st.write("Bem-vindo à página de gráficos. Aqui você encontrará representações visuais baseadas nos dados coletados.")
 
-analise_atividades = AnaliseAtividades(user_id=1)
-
 # Função principal
 def main():
     st.sidebar.title("Menu de Navegação")
@@ -207,7 +205,6 @@ def main():
         analise_atividades.distribuir_equipe_atividades()
         analise_atividades.registrar_atividades_quantidades()
         analise_atividades.gerar_relatorio_excel()
-        analise_atividades.zerar_dados()
 
     elif app_choice == "Informações":
         informacoes()
@@ -217,5 +214,6 @@ def main():
 
 if __name__ == "__main__":
     user_id = str(uuid.uuid4())
-    analise_atividades = AnaliseAtividades(user_id)  # Mova esta linha para cá
+    registro = RegistroAtividades(user_id)
+    analise_atividades = AnaliseAtividades(user_id)
     main()
