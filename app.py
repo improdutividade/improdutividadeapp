@@ -155,13 +155,11 @@ class AnaliseAtividades:
         self.iniciar_sessao()
 
     def iniciar_sessao(self):
-        if 'analise' not in st.session_state:
-            st.session_state.analise = {
-                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade']),
-                'nome_usuario': self.nome_usuario,
-                'frente_servico': self.frente_servico,
-                'quantidade_equipe': self.quantidade_equipe
+        if 'analise_atividades' not in st.session_state:
+            st.session_state.analise_atividades = {
+                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
             }
+
     
     def iniciar_arquivo_excel(self):
         if not os.path.exists(self.arquivo_dados):
