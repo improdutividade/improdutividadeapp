@@ -21,13 +21,12 @@ class RegistroAtividades:
             df.to_excel(self.arquivo_dados, index=False)
 
     def iniciar_sessao(self):
-        if 'registro' not in st.session_state:
-            st.session_state.registro = {
+        if 'registro_atividades' not in st.session_state:
+            st.session_state.registro_atividades = {
                 'nome_usuario': '',
                 'frente_servico': '',
                 'df': pd.DataFrame(columns=['ID', 'Nome_Usuário', 'Frente_Serviço', 'Função', 'Atividade', 'Data', 'Início', 'Fim', 'Duração'])
             }
-
 
     def obter_informacoes_iniciais(self):
         if not st.session_state.registro['nome_usuario']:
@@ -169,11 +168,6 @@ class AnaliseAtividades:
             df = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
             df.to_excel(self.arquivo_dados, index=False)
 
-    def iniciar_sessao(self):
-        if 'analise' not in st.session_state:
-            st.session_state.analise = {
-                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
-            }
 
     def iniciar_analise(self):
         st.write("Iniciando análise...")
