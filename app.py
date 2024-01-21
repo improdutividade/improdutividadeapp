@@ -159,10 +159,11 @@ class AnaliseAtividades:
                 'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
             }
 
-    def iniciar_analise(self):
-        st.write("Iniciando análise...")
+    def obter_informacoes_iniciais(self):
+        st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome de usuário: ").upper()
+        st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
 
-    def selecionar_atividades(self):
+    def distribuir_equipe_entre_atividades(self, quantidade_equipe):
         opcoes_atividades = [
             "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
             "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
@@ -172,7 +173,8 @@ class AnaliseAtividades:
 
         atividades_quantidades = {}
 
-        for atividade in opcoes_atividades:
+        for i in range(quantidade_equipe):
+            atividade = st.selectbox(f"Selecione a atividade para o funcionário {i + 1}:", opcoes_atividades)
             quantidade = st.number_input(f"Quantidade de pessoas fazendo '{atividade}':", min_value=0, step=1, value=0)
             if quantidade > 0:
                 atividades_quantidades[atividade] = quantidade
@@ -206,6 +208,11 @@ class AnaliseAtividades:
         else:
             st.warning("Nenhum dado disponível para exportação.")
 
+    def zerar_dados(self):
+        st.write("Zerando dados...")
+        st.session_state.analise['df'] = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
+        st.success("Dados zerados. Você pode iniciar novos registros.")
+
 # Função auxiliar para criar botão de download
 def get_binary_file_downloader_html(bin_file, file_label='File'):
     with open(bin_file, 'rb') as f:
@@ -216,8 +223,8 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
 
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
-registro = RegistroAtividades(user_id)
 analise = AnaliseAtividades(user_id)
+
 
 def descricao_app1():
     st.title("App 1 - Registro de Atividades (AtividadeTracker)")
@@ -268,20 +275,23 @@ def main():
     app_choice = st.sidebar.radio("Selecione uma opção:", ("App 1 - AtividadeTracker", "App 2 - ConstruData Insights", "Informações", "Gráficos"))
 
     if app_choice == "App 1 - AtividadeTracker":
-        registro.registrar_atividades()
+        # Código existente para o App 1
+        pass
 
     elif app_choice == "App 2 - ConstruData Insights":
-        # Implementando a lógica do App 2
-        analise.iniciar_analise()
-        atividades_quantidades = analise.selecionar_atividades()
+        analise.obter_informacoes_iniciais()
+        quantidade_equipe = st.number_input("Digite a quantidade de membros da equipe: ", min_value=1, step=1, value=1)
+        atividades_quantidades = analise.distribuir_equipe_entre_atividades(quantidade_equipe)
         analise.registrar_atividades_quantidades(atividades_quantidades)
         analise.gerar_relatorio_excel()
-        
+
     elif app_choice == "Informações":
-        informacoes()  # Adicionei a chamada à função informacoes
+        # Código existente para a página de Informações
+        pass
 
     elif app_choice == "Gráficos":
-        graficos()  # Adicionei a chamada à função graficos
+        # Código existente para a página de Gráficos
+        pass
 
 if __name__ == "__main__":
     main()
