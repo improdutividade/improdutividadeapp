@@ -192,28 +192,21 @@ def graficos():
     st.title("Gráficos")
     st.write("Bem-vindo à página de gráficos. Aqui você encontrará representações visuais baseadas nos dados coletados.")
 
-# Função principal
 def main():
-    st.sidebar.title("Menu de Navegação")
-    app_choice = st.sidebar.radio("Selecione uma opção:", ("App 1 - AtividadeTracker", "App 2 - ConstruData Insights", "Informações", "Gráficos"))
+    st.title("Análise de Atividades")
+    analise_atividades.obter_informacoes_iniciais()
 
-    if app_choice == "App 1 - AtividadeTracker":
-        registro.registrar_atividades()
-
-    elif app_choice == "App 2 - ConstruData Insights":
-        analise_atividades.obter_informacoes_iniciais()
+    if st.button("Distribuir Equipe entre Atividades"):
         analise_atividades.distribuir_equipe_atividades()
+
+    if st.button("Registrar Atividades e Quantidades"):
         analise_atividades.registrar_atividades_quantidades()
+
+    if st.button("Gerar Relatório Excel"):
         analise_atividades.gerar_relatorio_excel()
 
-    elif app_choice == "Informações":
-        informacoes()
-
-    elif app_choice == "Gráficos":
-        graficos()
+    if st.button("Zerar Dados"):
+        analise_atividades.zerar_dados()
 
 if __name__ == "__main__":
-    user_id = str(uuid.uuid4())
-    registro = RegistroAtividades(user_id)
-    analise_atividades = AnaliseAtividades(user_id)
     main()
