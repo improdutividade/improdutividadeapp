@@ -73,6 +73,9 @@ class AnaliseAtividades:
 
                 st.success(f"Atividade '{atividade}' registrada com {quantidade} pessoa(s).")
 
+            # Zera a equipe_distribuicao após o registro
+            st.session_state.analise['equipe_distribuicao'] = {}
+
     def gerar_relatorio_excel(self):
         st.write(f"Dados salvos em '{self.arquivo_dados}'")
 
@@ -83,6 +86,10 @@ class AnaliseAtividades:
             st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
         else:
             st.warning("Nenhum dado disponível para exportação.")
+
+    def zerar_dados(self):
+        # Zera todos os dados da sessão
+        st.session_state.analise = {}
 
 # Função auxiliar para criar botão de download
 def get_binary_file_downloader_html(bin_file, file_label='File'):
