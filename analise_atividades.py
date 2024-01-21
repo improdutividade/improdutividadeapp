@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import datetime
-import pytz
 import os
 import base64
 from io import BytesIO
@@ -34,20 +33,25 @@ class AnaliseAtividades:
         st.session_state.analise['equipe_quantidade'] = st.number_input("Digite a quantidade de membros da equipe: ", min_value=1, step=1, value=1)
 
     def distribuir_equipe_atividades(self):
-        self.iniciar_sessao()  # Certifique-se de chamar o método aqui
-    
+        self.iniciar_sessao()
+
         opcoes_atividades = [
             "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
             "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
             "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
             "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"
         ]
-    
+
         st.write("Distribua a quantidade de membros da equipe entre as atividades:")
         for atividade in opcoes_atividades:
-            quantidade = st.number_input(f"Quantidade para '{atividade}':", min_value=0, step=1, value=0)
+            quantidade = st.text_input(f"Quantidade para '{atividade}':")
+            if quantidade != '':
+                quantidade = int(quantidade)
+            else:
+                quantidade = 0
+
             st.session_state.analise['equipe_distribuicao'][atividade] = quantidade
-    
+
     def registrar_atividades_quantidades(self):
         df = st.session_state.analise['df']
 
@@ -74,20 +78,3 @@ class AnaliseAtividades:
             st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
         else:
             st.warning("Nenhum dado disponível para exportação.")
-
-    def zerar_dados(self):
-        st.write("Zerando dados...")
-        st.session_state.analise['df'] = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
-        st.session_state.analise['nome_usuario'] = ''
-        st.session_state.analise['frente_servico'] = ''
-        st.session_state.analise['equipe_quantidade'] = 0
-        st.session_state.analise['equipe_distribuicao'] = {}
-        st.success("Dados zerados. Você pode iniciar novos registros.")
-
-# Função auxiliar para criar botão de download
-def get_binary_file_downloader_html(bin_file, file_label='File'):
-    with open(bin_file, 'rb') as f:
-        data = f.read()
-    bin_str = base64.b64encode(data).decode()
-    href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">{file_label}</a>'
-    return href
