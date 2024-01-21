@@ -6,8 +6,6 @@ import os
 import base64
 from io import BytesIO
 import uuid
-import io
-import traceback
 
 class RegistroAtividades:
     def __init__(self, user_id):
@@ -161,12 +159,10 @@ class AnaliseAtividades:
                 'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
             }
 
-    def obter_informacoes_iniciais(self):
-        st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome: ").upper()
-        st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
-        st.session_state.analise['quantidade_equipe'] = st.number_input("Digite a quantidade de membros da equipe: ", min_value=1, step=1, value=1)
+    def iniciar_analise(self):
+        st.write("Iniciando análise...")
 
-    def distribuir_equipe_entre_atividades(self):
+    def selecionar_atividades(self):
         opcoes_atividades = [
             "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
             "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
@@ -177,9 +173,9 @@ class AnaliseAtividades:
         atividades_quantidades = {}
 
         for atividade in opcoes_atividades:
-            quantidade = st.text_input(f"Digite a quantidade de membros para '{atividade}':", key=f"quantidade_{atividade}", type="number")
-            if quantidade and quantidade.isdigit():
-                atividades_quantidades[atividade] = int(quantidade)
+            quantidade = st.number_input(f"Quantidade de pessoas fazendo '{atividade}':", min_value=0, step=1, value=0)
+            if quantidade > 0:
+                atividades_quantidades[atividade] = quantidade
 
         return atividades_quantidades
 
@@ -210,11 +206,6 @@ class AnaliseAtividades:
         else:
             st.warning("Nenhum dado disponível para exportação.")
 
-    def zerar_dados(self):
-        st.write("Zerando dados...")
-        st.session_state.analise['df'] = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
-        st.success("Dados zerados. Você pode iniciar novos registros.")
-
 # Função auxiliar para criar botão de download
 def get_binary_file_downloader_html(bin_file, file_label='File'):
     with open(bin_file, 'rb') as f:
@@ -225,33 +216,8 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
 
 # Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
+registro = RegistroAtividades(user_id)
 analise = AnaliseAtividades(user_id)
-
-def main():
-    st.sidebar.title("Menu de Navegação")
-    app_choice = st.sidebar.radio("Selecione uma opção:", ("App 1 - AtividadeTracker", "App 2 - ConstruData Insights", "Informações", "Gráficos"))
-
-    if app_choice == "App 1 - AtividadeTracker":
-        # Seção para App 1 - AtividadeTracker
-        pass
-
-    elif app_choice == "App 2 - ConstruData Insights":
-        # Seção para App 2 - ConstruData Insights
-        analise.obter_informacoes_iniciais()
-        atividades_quantidades = analise.distribuir_equipe_entre_atividades()
-        analise.registrar_atividades_quantidades(atividades_quantidades)
-        analise.gerar_relatorio_excel()
-
-    elif app_choice == "Informações":
-        # Seção para Informações
-        pass
-
-    elif app_choice == "Gráficos":
-        # Seção para Gráficos
-        pass
-
-if __name__ == "__main__":
-    main()
 
 def descricao_app1():
     st.title("App 1 - Registro de Atividades (AtividadeTracker)")
