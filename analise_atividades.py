@@ -34,18 +34,20 @@ class AnaliseAtividades:
         st.session_state.analise['equipe_quantidade'] = st.number_input("Digite a quantidade de membros da equipe: ", min_value=1, step=1, value=1)
 
     def distribuir_equipe_atividades(self):
+        self.iniciar_sessao()  # Certifique-se de chamar o método aqui
+    
         opcoes_atividades = [
             "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
             "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
             "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
             "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"
         ]
-
+    
         st.write("Distribua a quantidade de membros da equipe entre as atividades:")
         for atividade in opcoes_atividades:
             quantidade = st.number_input(f"Quantidade para '{atividade}':", min_value=0, step=1, value=0)
             st.session_state.analise['equipe_distribuicao'][atividade] = quantidade
-
+    
     def registrar_atividades_quantidades(self):
         df = st.session_state.analise['df']
 
