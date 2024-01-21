@@ -21,19 +21,16 @@ class RegistroAtividades:
             df.to_excel(self.arquivo_dados, index=False)
 
     def iniciar_sessao(self):
-        if 'registro_atividades' not in st.session_state:
-            st.session_state.registro_atividades = {
+        if 'registro' not in st.session_state:
+            st.session_state.registro = {
                 'nome_usuario': '',
                 'frente_servico': '',
                 'df': pd.DataFrame(columns=['ID', 'Nome_Usuário', 'Frente_Serviço', 'Função', 'Atividade', 'Data', 'Início', 'Fim', 'Duração'])
             }
 
     def obter_informacoes_iniciais(self):
-        if not st.session_state.registro_atividades['nome_usuario']:
-            st.session_state.registro_atividades['nome_usuario'] = st.text_input("Digite seu nome: ").upper()
-
-        if not st.session_state.registro_atividades['frente_servico']:
-            st.session_state.registro_atividades['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
+        st.session_state.registro['nome_usuario'] = st.text_input("Digite seu nome: ").upper()
+        st.session_state.registro['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
 
     def registrar_atividades(self):
         self.obter_informacoes_iniciais()
@@ -53,11 +50,10 @@ class RegistroAtividades:
 
     def selecionar_atividade(self, funcionario_id):
         opcoes_atividades = [
-            "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
-            "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
-            "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
-            "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"
-        ]
+           "Andando sem ferramenta", "Ao Celular / Fumando", "Aguardando Almoxarifado",
+           "À disposição", "Necessidades Pessoais (Água/Banheiro)", "Operando",
+           "Auxiliando", "Ajustando Ferramenta ou Equipamento", "Deslocando com ferramenta em mãos",
+           "Em prontidão", "Conversando com Encarregado/Operários (Informações Técnicas)"]
 
         atividade = st.selectbox(f"Selecione a atividade para funcionário {funcionario_id}:", opcoes_atividades, key=f"atividade_{funcionario_id}")
         return atividade
@@ -79,8 +75,8 @@ class RegistroAtividades:
     def iniciar_atividade(self, funcionario_id, nome_funcao, atividade):
         novo_registro = {
             'ID': funcionario_id,
-            'Nome_Usuário': st.session_state.registro_atividades['nome_usuario'],
-            'Frente_Serviço': st.session_state.registro_atividades['frente_servico'],
+            'Nome_Usuário': st.session_state.registro['nome_usuario'],
+            'Frente_Serviço': st.session_state.registro['frente_servico'],
             'Função': nome_funcao,
             'Atividade': atividade,
             'Data': datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=-3))).strftime("%Y-%m-%d"),
@@ -89,16 +85,16 @@ class RegistroAtividades:
             'Duração': ''
         }
 
-        df = st.session_state.registro_atividades['df']
+        df = st.session_state.registro['df']
         df = pd.concat([df, pd.DataFrame([novo_registro])], ignore_index=True)
-        st.session_state.registro_atividades['df'] = df
+        st.session_state.registro['df'] = df
 
         st.success(f"Atividade '{atividade}' iniciada para funcionário {funcionario_id} ({nome_funcao})")
 
     def encerrar_atividade(self, funcionario_id):
         st.write(f"Encerrando atividade para funcionário {funcionario_id}...")
 
-        df = st.session_state.registro_atividades['df']
+        df = st.session_state.registro['df']
 
         funcionario_df = df[df['ID'] == funcionario_id]
 
@@ -112,7 +108,7 @@ class RegistroAtividades:
             fim = datetime.datetime.now()
             duracao = fim - pd.to_datetime(inicio)
             df.loc[(df['ID'] == funcionario_id) & (df.index == len(funcionario_df) - 1), 'Duração'] = duracao
-            st.session_state.registro_atividades['df'] = df
+            st.session_state.registro['df'] = df
             st.success(f"Atividade encerrada para funcionário {funcionario_id} às {fim.strftime('%H:%M:%S')}")
 
         else:
@@ -121,7 +117,7 @@ class RegistroAtividades:
     def gerar_relatorio_excel(self):
         st.write(f"Dados salvos em '{self.arquivo_dados}'")
 
-        df = st.session_state.registro_atividades['df']
+        df = st.session_state.registro['df']
 
         if not df.empty:
             df.to_excel(self.arquivo_dados, index=False)
@@ -131,32 +127,38 @@ class RegistroAtividades:
 
     def zerar_dados(self):
         st.write("Zerando dados...")
-        st.session_state.registro_atividades['df'] = pd.DataFrame(columns=['ID', 'Nome_Usuário', 'Frente_Serviço', 'Função', 'Atividade', 'Data', 'Início', 'Fim', 'Duração'])
+        st.session_state.registro['df'] = pd.DataFrame(columns=['ID', 'Nome_Usuário', 'Frente_Serviço', 'Função', 'Atividade', 'Data', 'Início', 'Fim', 'Duração'])
         st.success("Dados zerados. Você pode iniciar novos registros.")
 
+# Função auxiliar para criar botão de download
+def get_binary_file_downloader_html(bin_file, file_label='File'):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    bin_str = base64.b64encode(data).decode()
+    href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">{file_label}</a>'
+    return href
+
+# Adicionado um identificador único para cada usuário usando o UUID
+user_id = str(uuid.uuid4())
+registro = RegistroAtividades(user_id)
 
 class AnaliseAtividades:
     def __init__(self, user_id):
         self.user_id = user_id
-        self.nome_usuario = st.text_input("Digite seu nome:")
-        self.frente_servico = st.text_input("Digite a frente de serviço:")
-        self.quantidade_equipe = st.number_input("Digite a quantidade da equipe:", min_value=1, step=1, value=1)
         self.arquivo_dados = f'analise_atividades_{self.user_id}.xlsx'
         self.iniciar_arquivo_excel()
         self.iniciar_sessao()
 
-    def iniciar_sessao(self):
-        if 'analise_atividades' not in st.session_state:
-            st.session_state.analise_atividades = {
-                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
-            }
-
-    
     def iniciar_arquivo_excel(self):
         if not os.path.exists(self.arquivo_dados):
             df = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
             df.to_excel(self.arquivo_dados, index=False)
 
+    def iniciar_sessao(self):
+        if 'analise' not in st.session_state:
+            st.session_state.analise = {
+                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
+            }
 
     def iniciar_analise(self):
         st.write("Iniciando análise...")
@@ -213,6 +215,7 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
     href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">{file_label}</a>'
     return href
 
+# Adicionado um identificador único para cada usuário usando o UUID
 user_id = str(uuid.uuid4())
 registro = RegistroAtividades(user_id)
 analise = AnaliseAtividades(user_id)
