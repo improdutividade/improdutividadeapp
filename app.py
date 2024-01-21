@@ -151,17 +151,21 @@ class AnaliseAtividades:
 
     def iniciar_arquivo_excel(self):
         if not os.path.exists(self.arquivo_dados):
-            df = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
+            df = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade', 'Nome_Usuário', 'Frente_Serviço'])
             df.to_excel(self.arquivo_dados, index=False)
 
     def iniciar_sessao(self):
         if 'analise' not in st.session_state:
             st.session_state.analise = {
-                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
+                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade', 'Nome_Usuário', 'Frente_Serviço'])
             }
 
+    def obter_informacoes_iniciais(self):
+        st.session_state.analise['nome_usuario'] = st.text_input("Digite seu nome: ").upper()
+        st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
+
     def iniciar_analise(self):
-        st.write("Iniciando análise...")
+        self.obter_informacoes_iniciais()
 
     def selecionar_atividades(self):
         opcoes_atividades = [
@@ -188,7 +192,9 @@ class AnaliseAtividades:
                 'Atividade': atividade,
                 'Início': datetime.datetime.now().strftime("%H:%M:%S"),
                 'Fim': '',
-                'Quantidade': quantidade
+                'Quantidade': quantidade,
+                'Nome_Usuário': st.session_state.analise['nome_usuario'],
+                'Frente_Serviço': st.session_state.analise['frente_servico']
             }
 
             df = pd.concat([df, pd.DataFrame([novo_registro])], ignore_index=True)
@@ -206,19 +212,6 @@ class AnaliseAtividades:
             st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
         else:
             st.warning("Nenhum dado disponível para exportação.")
-
-# Função auxiliar para criar botão de download
-def get_binary_file_downloader_html(bin_file, file_label='File'):
-    with open(bin_file, 'rb') as f:
-        data = f.read()
-    bin_str = base64.b64encode(data).decode()
-    href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">{file_label}</a>'
-    return href
-
-# Adicionado um identificador único para cada usuário usando o UUID
-user_id = str(uuid.uuid4())
-registro = RegistroAtividades(user_id)
-analise = AnaliseAtividades(user_id)
 
 def descricao_app1():
     st.title("App 1 - Registro de Atividades (AtividadeTracker)")
