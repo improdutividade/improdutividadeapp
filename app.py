@@ -151,28 +151,17 @@ class AnaliseAtividades:
 
     def iniciar_arquivo_excel(self):
         if not os.path.exists(self.arquivo_dados):
-            df = pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Quantidade'])
+            df = pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
             df.to_excel(self.arquivo_dados, index=False)
 
     def iniciar_sessao(self):
-        if 'construdata' not in st.session_state:
-            st.session_state.construdata = {
-                'nome_usuario': '',
-                'frente_servico': '',
-                'quantidade_equipe': 0,
-                'atividades_quantidades': {},
-                'df': pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Quantidade'])
+        if 'analise' not in st.session_state:
+            st.session_state.analise = {
+                'df': pd.DataFrame(columns=['Atividade', 'Início', 'Fim', 'Quantidade'])
             }
 
-    def obter_informacoes_iniciais(self):
-        if not st.session_state.construdata['nome_usuario']:
-            st.session_state.construdata['nome_usuario'] = st.sidebar.text_input("Digite seu nome:").upper()
-
-        if not st.session_state.construdata['frente_servico']:
-            st.session_state.construdata['frente_servico'] = st.sidebar.text_input("Digite a frente de serviço:").upper()
-
-        if st.sidebar.button("Definir Quantidade da Equipe"):
-            st.session_state.construdata['quantidade_equipe'] = st.sidebar.number_input("Digite a quantidade de membros da equipe:", min_value=1, step=1, value=1)
+    def iniciar_analise(self):
+        st.write("Iniciando análise...")
 
     def selecionar_atividades(self):
         opcoes_atividades = [
@@ -185,75 +174,51 @@ class AnaliseAtividades:
         atividades_quantidades = {}
 
         for atividade in opcoes_atividades:
-            quantidade = st.number_input(
-                f"Quantidade de pessoas fazendo '{atividade}':",
-                min_value=0, max_value=st.session_state.construdata['quantidade_equipe'], step=1, value=0
-            )
+            quantidade = st.number_input(f"Quantidade de pessoas fazendo '{atividade}':", min_value=0, step=1, value=0)
             if quantidade > 0:
                 atividades_quantidades[atividade] = quantidade
 
         return atividades_quantidades
 
-    def registrar_atividades_quantidades(self, atividade, quantidade):
-        novo_registro = {
-            'Nome_Usuario': st.session_state.construdata['nome_usuario'],
-            'Frente_Servico': st.session_state.construdata['frente_servico'],
-            'Atividade': atividade,
-            'Quantidade': quantidade
-        }
-        st.session_state.construdata['df'] = pd.concat([st.session_state.construdata['df'], pd.DataFrame([novo_registro])], ignore_index=True)
+    def registrar_atividades_quantidades(self, atividades_quantidades):
+        df = st.session_state.analise['df']
+
+        for atividade, quantidade in atividades_quantidades.items():
+            novo_registro = {
+                'Atividade': atividade,
+                'Início': datetime.datetime.now().strftime("%H:%M:%S"),
+                'Fim': '',
+                'Quantidade': quantidade
+            }
+
+            df = pd.concat([df, pd.DataFrame([novo_registro])], ignore_index=True)
+            st.session_state.analise['df'] = df
+
+            st.success(f"Atividade '{atividade}' registrada com {quantidade} pessoa(s).")
 
     def gerar_relatorio_excel(self):
-        df = st.session_state.construdata['df']
+        st.write(f"Dados salvos em '{self.arquivo_dados}'")
 
-        # Cria um link para download do arquivo Excel
-        output = io.BytesIO()
-        writer = pd.ExcelWriter(output, engine='openpyxl')  # Use 'openpyxl' como engine
-        df.to_excel(writer, index=False, sheet_name='Sheet1')
-        writer.save()
-        output.seek(0)
+        df = st.session_state.analise['df']
 
-        # Gera um link de download
-        b64 = base64.b64encode(output.read()).decode()
-        href = f'<a href="data:application/octet-stream;base64,{b64}" download="analise_atividades_{self.user_id}.xlsx">Baixar Relatório Excel</a>'
-        st.markdown(href, unsafe_allow_html=True)
+        if not df.empty:
+            df.to_excel(self.arquivo_dados, index=False)
+            st.markdown(get_binary_file_downloader_html(self.arquivo_dados, 'Relatório Atividades'), unsafe_allow_html=True)
+        else:
+            st.warning("Nenhum dado disponível para exportação.")
 
-    def zerar_analise(self):
-        st.session_state.construdata = {
-            'nome_usuario': '',
-            'frente_servico': '',
-            'quantidade_equipe': 0,
-            'atividades_quantidades': {},
-            'df': pd.DataFrame(columns=['Nome_Usuario', 'Frente_Servico', 'Atividade', 'Quantidade'])
-        }
-        st.success("Análise zerada. Agora você pode iniciar uma nova análise.")
-
-    def iniciar_analise(self):
-        self.obter_informacoes_iniciais()
-
-        for i in range(1, st.session_state.construdata['quantidade_equipe'] + 1):
-            st.write(f"Divisão da Equipe {i}:")
-
-            # Obter atividades para a equipe atual
-            atividades_quantidades = self.selecionar_atividades()
-
-            # Registrar atividades no dataframe
-            for atividade, quantidade in atividades_quantidades.items():
-                self.registrar_atividades_quantidades(atividade, quantidade)
-
-        st.write("Análise concluída para a equipe.")
-
-        # Adiciona botões
-        if st.button("Baixar Relatório Excel"):
-            self.gerar_relatorio_excel()
-
-        if st.button("Zerar Análise"):
-            self.zerar_analise()
+# Função auxiliar para criar botão de download
+def get_binary_file_downloader_html(bin_file, file_label='File'):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    bin_str = base64.b64encode(data).decode()
+    href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">{file_label}</a>'
+    return href
 
 # Adicionado um identificador único para cada usuário usando o UUID
-user_id = "test_user_id"  # Substitua isso por sua lógica para gerar user_id
+user_id = str(uuid.uuid4())
+registro = RegistroAtividades(user_id)
 analise = AnaliseAtividades(user_id)
-analise.iniciar_analise()
 
 def descricao_app1():
     st.title("App 1 - Registro de Atividades (AtividadeTracker)")
@@ -308,13 +273,16 @@ def main():
 
     elif app_choice == "App 2 - ConstruData Insights":
         # Implementando a lógica do App 2
-        construdata_app.iniciar_analise()
-
+        analise.iniciar_analise()
+        atividades_quantidades = analise.selecionar_atividades()
+        analise.registrar_atividades_quantidades(atividades_quantidades)
+        analise.gerar_relatorio_excel()
+        
     elif app_choice == "Informações":
-        informacoes()  # Adicione a lógica do App de Informações aqui
+        informacoes()  # Adicionei a chamada à função informacoes
 
     elif app_choice == "Gráficos":
-        graficos()  # Adicione a lógica do App de Gráficos aqui
+        graficos()  # Adicionei a chamada à função graficos
 
 if __name__ == "__main__":
     main()
