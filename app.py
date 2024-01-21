@@ -141,9 +141,6 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
     href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">{file_label}</a>'
     return href
 
-# Adicionado um identificador único para cada usuário usando o UUID
-user_id = str(uuid.uuid4())
-
 class AnaliseAtividades:
     def __init__(self, user_id):
         self.user_id = user_id
