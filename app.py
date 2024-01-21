@@ -168,7 +168,13 @@ class AnaliseAtividades:
         st.session_state.analise['frente_servico'] = st.text_input("Digite a frente de serviço: ").upper()
 
     def iniciar_analise(self):
-        st.write("Iniciando análise...")
+        try:
+            st.write("Iniciando análise...")
+            atividades_quantidades = self.selecionar_atividades()
+            self.registrar_atividades_quantidades(atividades_quantidades)
+            self.gerar_relatorio_excel()
+        except Exception as e:
+            st.error(f"Erro durante a análise: {str(e)}")
 
     def selecionar_atividades(self):
         opcoes_atividades = [
