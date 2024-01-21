@@ -8,7 +8,7 @@ from io import BytesIO
 import uuid
 
 st.set_page_config(
-    page_title="Exxata Produtividade",
+    page_title="Exxata Produtividade     ",
     page_icon="🐺",
     layout='centered',
     initial_sidebar_state='expanded'
