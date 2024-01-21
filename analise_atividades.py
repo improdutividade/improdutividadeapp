@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import datetime
+import pytz  # Módulo para lidar com fusos horários
 import os
 import base64
 from io import BytesIO
@@ -59,11 +60,14 @@ class AnaliseAtividades:
         # Verifica se há alguma atualização nas atividades
         if any(st.session_state.analise['equipe_distribuicao'].values()):
             for atividade, quantidade in st.session_state.analise['equipe_distribuicao'].items():
+                # Obtemos o horário atual no fuso horário de Brasília
+                horario_brasilia = datetime.datetime.now(pytz.timezone('America/Sao_Paulo')).strftime("%H:%M:%S")
+
                 novo_registro = {
                     'Nome_Usuário': st.session_state.analise['nome_usuario'],
                     'Frente_Serviço': st.session_state.analise['frente_servico'],
                     'Atividade': atividade,
-                    'Início': datetime.datetime.now().strftime("%H:%M:%S"),
+                    'Início': horario_brasilia,
                     'Fim': '',
                     'Quantidade': quantidade
                 }
@@ -88,8 +92,10 @@ class AnaliseAtividades:
             st.warning("Nenhum dado disponível para exportação.")
 
     def zerar_dados(self):
-        # Zera todos os dados da sessão
+        # Zera todos os dados da sessão e exclui o arquivo Excel
         st.session_state.analise = {}
+        if os.path.exists(self.arquivo_dados):
+            os.remove(self.arquivo_dados)
 
 # Função auxiliar para criar botão de download
 def get_binary_file_downloader_html(bin_file, file_label='File'):
