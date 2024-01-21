@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import datetime
-import pytz  # Módulo para lidar com fusos horários
+import pytz
 import os
 import base64
 from io import BytesIO
@@ -104,3 +104,26 @@ def get_binary_file_downloader_html(bin_file, file_label='File'):
     bin_str = base64.b64encode(data).decode()
     href = f'<a href="data:application/octet-stream;base64,{bin_str}" download="{os.path.basename(bin_file)}">{file_label}</a>'
     return href
+
+# Cria uma instância de AnaliseAtividades
+analise_atividades = AnaliseAtividades(user_id=1)
+
+# Seção principal do Streamlit
+def main():
+    st.title("Análise de Atividades")
+    analise_atividades.obter_informacoes_iniciais()
+
+    if st.button("Distribuir Equipe entre Atividades"):
+        analise_atividades.distribuir_equipe_atividades()
+
+    if st.button("Registrar Atividades e Quantidades"):
+        analise_atividades.registrar_atividades_quantidades()
+
+    if st.button("Gerar Relatório Excel"):
+        analise_atividades.gerar_relatorio_excel()
+
+    if st.button("Zerar Dados"):
+        analise_atividades.zerar_dados()
+
+if __name__ == "__main__":
+    main()
